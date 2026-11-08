@@ -586,3 +586,8 @@ h1, h2, h3, p, figure { margin: 0; }
 /* text icons drawn as SVG (iOS turns arrows and stars into emoji) */
 .ico { width: .9em; height: .9em; display: inline-block; vertical-align: -.08em; }
 .marquee b .ico { width: .8em; height: .8em; }
+
+/* hero copy in capitals */
+.hero__card { text-transform: uppercase; }
+.hero__statement { font-size: clamp(32px, min(6.3vw, 9.2vh), 128px); letter-spacing: -.03em; }
+.hero__strip a span { text-transform: uppercase; }

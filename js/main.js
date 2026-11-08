@@ -9,7 +9,10 @@
   const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
   const page = document.body.dataset.page || "home";
   // image ids: "p13" = cropped artboard, "k115" = original Links file
-  const img = (id, size = "s") => size === "s" ? `img/w/s/${id}.jpg` : `img/w/${id}.jpg`;
+  const img = (id, size = "s") => size === "s" ? `img/w/s/${id}.jpg` : size === "m" ? `img/w/m/${id}.jpg` : `img/w/${id}.jpg`;
+  // responsive sources: the browser picks 900 / 1600 / 3000px for the screen
+  const srcset = id => `img/w/s/${id}.jpg 900w, img/w/m/${id}.jpg 1600w, img/w/${id}.jpg 3000w`;
+  const pic = (id, sizes, alt, extra = "") => `<img src="${img(id, "m")}" srcset="${srcset(id)}" sizes="${sizes}" alt="${alt}" ${extra}>`;
   const pad2 = n => String(n).padStart(2, "0");
   let vw = innerWidth, vh = innerHeight;
   const scrollers = [];
@@ -197,8 +200,9 @@
     if (track) {
       const extra = [["k102", "alatool"], ["k004", "sports-for-all"], ["k130", "frame-house"], ["k136", "sadeem"], ["k162", "do-not-give-it-a-chance"], ["k169", "cyberani-profile"], ["k182", "marasi"], ["k202", "alinma-fantasy"]];
       const items = [];
-      D.projects.forEach((p, i) => { items.push([p.cover, p.slug, p.title]); if (extra[i]) items.push([extra[i][0], extra[i][1], D.projects.find(q => q.slug === extra[i][1]).title]); });
-      const html = items.map(([id, slug, title]) => `<a href="project.html?p=${slug}" data-cursor="View"><img src="${img(id)}" alt="${title}" decoding="async"><span>${title}</span></a>`).join("");
+      const SKIP = ["cyberani-profile", "alinma-fantasy", "bina-ehsan"];
+      D.projects.forEach((p, i) => { if (!SKIP.includes(p.slug)) items.push([p.cover, p.slug, p.title]); if (extra[i] && !SKIP.includes(extra[i][1])) items.push([extra[i][0], extra[i][1], D.projects.find(q => q.slug === extra[i][1]).title]); });
+      const html = items.map(([id, slug, title]) => `<a href="project.html?p=${slug}" data-cursor="View">${pic(id, "(max-width: 860px) 140px, 260px", title, 'decoding="async"')}<span>${title}</span></a>`).join("");
       track.innerHTML = html + html.replace(/<a /g, '<a aria-hidden="true" tabindex="-1" ');
     }
 
@@ -239,7 +243,7 @@
       }
       n++;
       html += `<a class="hcard" href="project.html?p=${p.slug}" data-cursor="View">
-        <div class="hcard__media"><img src="${img(p.cover)}" alt="${p.title} — ${p.sub}" loading="lazy"><img src="${img(p.hover)}" alt="" loading="lazy"></div>
+        <div class="hcard__media">${pic(p.cover, "(max-width: 860px) 84vw, 56vw", p.title + " — " + p.sub, 'loading="lazy"')}${pic(p.hover, "(max-width: 860px) 84vw, 56vw", "", 'loading="lazy"')}</div>
         <div class="hcard__meta"><h3 class="hcard__title">${p.title}</h3><span class="hcard__cat">${p.cat} — ${p.sub}</span></div>
       </a>`;
     });
@@ -256,7 +260,7 @@
 
     /* lettering: cards start scattered around the word, then settle into two rows that slide */
     const LETTERING = [{"id": "p88", "bg": "#000000", "src": "pdf"}, {"id": "k150", "bg": "#020202", "src": "links"}, {"id": "p89", "bg": "#000000", "src": "pdf"}, {"id": "p90", "bg": "#000000", "src": "pdf"}, {"id": "k213", "bg": "#ca191f", "src": "links"}, {"id": "p91", "bg": "#000000", "src": "pdf"}, {"id": "p92", "bg": "#000000", "src": "pdf"}, {"id": "k084", "bg": "#000000", "src": "links"}, {"id": "p93", "bg": "#000000", "src": "pdf"}, {"id": "p94", "bg": "#000000", "src": "pdf"}, {"id": "k215", "bg": "#e0e0e0", "src": "links"}, {"id": "p95", "bg": "#000000", "src": "pdf"}, {"id": "p96", "bg": "#000000", "src": "pdf"}, {"id": "k153", "bg": "#000000", "src": "links"}, {"id": "p97", "bg": "#000000", "src": "pdf"}, {"id": "p99", "bg": "#000000", "src": "pdf"}, {"id": "p100", "bg": "#000000", "src": "pdf"}, {"id": "p101", "bg": "#000000", "src": "pdf"}, {"id": "p102", "bg": "#000000", "src": "pdf"}];
-    const lsrc = it => it.src === "links" ? img(it.id) : `img/lt/${it.id}.jpg`;
+    const lsrc = it => it.src === "links" ? img(it.id, "m") : `img/lt/${it.id}.jpg`;
     const half = Math.ceil(LETTERING.length / 2);
     $$(".lettering__row").forEach((row, r) => {
       row.innerHTML = (r ? LETTERING.slice(half) : LETTERING.slice(0, half))
@@ -359,9 +363,9 @@
     p.title.split(" ").forEach(w => { if ((cur + " " + w).trim().length > 12 && cur) { lines.push(cur); cur = w; } else cur = (cur + " " + w).trim(); });
     lines.push(cur);
 
-    const fig = id => `<figure><img src="${img(id, "l")}" alt="${p.title} — ${p.sub}" loading="lazy"></figure>`;
+    const fig = (id, sz = "100vw") => `<figure>${pic(id, sz, p.title + " — " + p.sub, 'loading="lazy"')}</figure>`;
     const gallery = p.gallery.map(item => Array.isArray(item)
-      ? `<div class="g-row" style="--n:${item.length}">${item.map(fig).join("")}</div>`
+      ? `<div class="g-row" style="--n:${item.length}">${item.map(id => fig(id, `${Math.round(100 / item.length)}vw`)).join("")}</div>`
       : fig(item).replace("<figure>", '<figure class="g-wide">')).join("");
 
     $("#project").innerHTML = `
@@ -375,7 +379,7 @@
         <div><span>Discipline</span>${p.cat} — ${p.sub}</div>
         <div><span>Designer</span>Majid Sanad</div>
       </div>
-      <figure class="p-cover"><img src="${img(p.cover, "l")}" alt="${p.title} — ${p.sub}"></figure>
+      <figure class="p-cover">${pic(p.cover, "100vw", p.title + " — " + p.sub)}</figure>
       <section class="p-about">
         <h2><span class="line"><span>About this</span></span><span class="line"><span>project</span></span></h2>
         <div class="p-about__grid">${p.about.map(a => `<article class="reveal"><h3>${a[0]}</h3><p>${a[1]}</p></article>`).join("")}</div>
