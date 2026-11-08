@@ -652,3 +652,5 @@ html[dir="rtl"] :is(.nav__cta, .consult__btn, .contact__cta):hover i { transform
 
 /* loop containers also run LTR so the track starts at the left edge */
 html[dir="rtl"] :is(.hero__strip, .marks__row, .band) { direction: ltr; }
+
+@media (max-width: 420px) { .hero__bottom { flex-wrap: wrap; gap: 14px 24px; } .hero__metric b { font-size: clamp(44px, 13vw, 60px); } }
