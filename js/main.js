@@ -8,6 +8,28 @@
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
   const page = document.body.dataset.page || "home";
+  // language: Arabic pages live in /ar/ and use <base href="../">, so asset paths stay the same
+  const AR = document.documentElement.lang === "ar";
+  const LP = AR ? "ar/" : "";
+  D.projects.forEach(p => { p.key = p.cat; });
+  if (AR && window.PORTFOLIO_AR) {
+    const A = window.PORTFOLIO_AR;
+    D.projects.forEach(p => Object.assign(p, A.projects[p.slug] || {}));
+    D.workedAt = A.workedAt;
+  }
+  const T = AR ? {
+    view: "شاهد", next: "التالي", hi: "مرحباً", copied: "تم نسخ البريد ✓",
+    chapters: { Branding: ["الهويات", "العلامة ليست شعاراً، بل وعدٌ يُرى.", ""], Campaign: ["الحملات", "أفكار تحرّك الناس — حملات توعوية وإطلاقات ومواسم لجهات وطنية.", "dark"], Editorial: ["المطبوعات", "معلومات كثيفة تُعرض بهدوء — ملفات تعريفية وتقارير وكتيّبات.", ""] },
+    allWork: "→ كل الأعمال", client: "العميل", discipline: "المجال", designer: "المصمم", me: "ماجد سند",
+    about: ["عن", "المشروع"], similar: "عندك مشروع<br><em>مشابه؟</em>", talk: "لنتحدث", nextProject: "المشروع التالي", arrow: "←",
+    foot: "مصمم جرافيك — © 2026. كل العلامات، كل الرؤية.", top: "للأعلى ↑", lett: "خط عربي يدوي — ماجد سند"
+  } : {
+    view: "View", next: "Next", hi: "Say hi", copied: "Email copied ✓",
+    chapters: { Branding: ["Branding", "A brand is not a logo. It's a promise made visible.", ""], Campaign: ["Campaigns", "Ideas that move people — awareness, launches and seasonal campaigns for national entities.", "dark"], Editorial: ["Editorials", "Dense information, made calm. Profiles, reports and brochures.", ""] },
+    allWork: "← All work", client: "Client", discipline: "Discipline", designer: "Designer", me: "Majid Sanad",
+    about: ["About this", "project"], similar: "Have a similar<br><em>project?</em>", talk: "Let's talk", nextProject: "Next project", arrow: "→",
+    foot: "Graphic Designer — © 2026. All brands. All vision.", top: "Back to top ↑", lett: "Arabic lettering by Majid Sanad"
+  };
   // image ids: "p13" = cropped artboard, "k115" = original Links file
   const img = (id, size = "s") => size === "s" ? `img/w/s/${id}.jpg` : size === "m" ? `img/w/m/${id}.jpg` : `img/w/${id}.jpg`;
   // responsive sources: the browser picks 900 / 1600 / 3000px for the screen
@@ -115,7 +137,17 @@
     const b = e.target.closest(".js-copy");
     if (!b) return;
     const v = b.dataset.copy;
-    (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => say("Email copied ✓"), () => (location.href = "mailto:" + v));
+    (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => say(T.copied), () => (location.href = "mailto:" + v));
+  });
+
+  /* ---------- in-page anchors: scroll here, never jump to another page ---------- */
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    e.preventDefault();
+    const id = a.getAttribute("href").slice(1);
+    const el = id && id !== "top" ? document.getElementById(id) : null;
+    scrollTo({ top: el ? el.getBoundingClientRect().top + scrollY : 0, behavior: reduce ? "auto" : "smooth" });
   });
 
   /* ---------- page transitions ---------- */
@@ -131,7 +163,7 @@
     const a = e.target.closest("a[href]");
     if (!a || a.target === "_blank" || e.metaKey || e.ctrlKey) return;
     const href = a.getAttribute("href");
-    if (!/^(index\.html|project\.html)/.test(href)) return;
+    if (!/^(ar\/)?(index\.html|project\.html)/.test(href)) return;
     e.preventDefault();
     if (reduce) { location.href = href; return; }
     curtain.classList.remove("out"); curtain.classList.add("in");
@@ -202,7 +234,7 @@
       const items = [];
       const SKIP = ["cyberani-profile", "alinma-fantasy", "bina-ehsan"];
       D.projects.forEach((p, i) => { if (!SKIP.includes(p.slug)) items.push([p.cover, p.slug, p.title]); if (extra[i] && !SKIP.includes(extra[i][1])) items.push([extra[i][0], extra[i][1], D.projects.find(q => q.slug === extra[i][1]).title]); });
-      const html = items.map(([id, slug, title]) => `<a href="project.html?p=${slug}" data-cursor="View">${pic(id, "(max-width: 860px) 140px, 260px", title, 'decoding="async"')}<span>${title}</span></a>`).join("");
+      const html = items.map(([id, slug, title]) => `<a href="${LP}project.html?p=${slug}" data-cursor="${T.view}">${pic(id, "(max-width: 860px) 140px, 260px", title, 'decoding="async"')}<span>${title}</span></a>`).join("");
       track.innerHTML = html + html.replace(/<a /g, '<a aria-hidden="true" tabindex="-1" ');
     }
 
@@ -229,20 +261,16 @@
 
     /* horizontal work track */
     hTrack = $(".js-htrack"); hSection = $(".hwork");
-    const chapters = {
-      Branding: ["Branding", "02", "A brand is not a logo. It's a promise made visible.", ""],
-      Campaign: ["Campaigns", "04", "Ideas that move people — awareness, launches and seasonal campaigns for national entities.", "dark"],
-      Editorial: ["Editorials", "05", "Dense information, made calm. Profiles, reports and brochures.", ""]
-    };
+    const chapters = T.chapters;
     let lastCat = null, html = "", n = 0;
     D.projects.forEach(p => {
-      if (p.cat !== lastCat) {
-        const c = chapters[p.cat];
-        html += `<div class="hchap ${c[3]}" data-chapter="${c[0].toLowerCase()}"><div class="hchap__top label"><span>${c[0]}</span></div><span class="flex-word">${c[0]}</span><p>${c[2]}</p></div>`;
-        lastCat = p.cat;
+      if (p.key !== lastCat) {
+        const c = chapters[p.key];
+        html += `<div class="hchap ${c[2]}" data-chapter="${p.key.toLowerCase()}"><div class="hchap__top label"><span>${c[0]}</span></div><span class="flex-word">${c[0]}</span><p>${c[1]}</p></div>`;
+        lastCat = p.key;
       }
       n++;
-      html += `<a class="hcard" href="project.html?p=${p.slug}" data-cursor="View">
+      html += `<a class="hcard" href="${LP}project.html?p=${p.slug}" data-cursor="${T.view}">
         <div class="hcard__media">${pic(p.cover, "(max-width: 860px) 84vw, 56vw", p.title + " — " + p.sub, 'loading="lazy"')}${pic(p.hover, "(max-width: 860px) 84vw, 56vw", "", 'loading="lazy"')}</div>
         <div class="hcard__meta"><h3 class="hcard__title">${p.title}</h3><span class="hcard__cat">${p.cat} — ${p.sub}</span></div>
       </a>`;
@@ -254,7 +282,7 @@
       const r = hSection.getBoundingClientRect();
       if (!inView(r, vh)) return;
       const p = clamp(-r.top / Math.max(1, r.height - vh));
-      hTrack.style.transform = `translate3d(${-p * trackMax}px,0,0)`;
+      hTrack.style.transform = `translate3d(${(AR ? 1 : -1) * p * trackMax}px,0,0)`;
       hbar.style.setProperty("--hp", p);
     });
 
@@ -264,7 +292,7 @@
     const half = Math.ceil(LETTERING.length / 2);
     $$(".lettering__row").forEach((row, r) => {
       row.innerHTML = (r ? LETTERING.slice(half) : LETTERING.slice(0, half))
-        .map(it => `<figure style="--bg:${it.bg}"><img src="${lsrc(it)}" alt="Arabic lettering by Majid Sanad" loading="lazy"></figure>`).join("");
+        .map(it => `<figure style="--bg:${it.bg}"><img src="${lsrc(it)}" alt="${T.lett}" loading="lazy"></figure>`).join("");
     });
 
     /* marks: real vector logos, two slow rows */
@@ -352,9 +380,11 @@
   if (page === "project") {
     const slug = new URLSearchParams(location.search).get("p");
     const idx = D.projects.findIndex(p => p.slug === slug);
-    if (idx < 0) { location.replace("index.html#work"); return; }
+    if (idx < 0) { location.replace(LP + "index.html#work"); return; }
     const p = D.projects[idx], next = D.projects[(idx + 1) % D.projects.length];
-    document.title = `${p.title} — ${p.sub} · Majid Sanad`;
+    document.title = `${p.title} — ${p.sub} · ${T.me}`;
+    const sw = $(".js-lang");
+    if (sw) sw.href = (AR ? "" : "ar/") + "project.html?p=" + p.slug;
     document.documentElement.style.setProperty("--pbg", p.bg);
     document.documentElement.style.setProperty("--pfg", p.fg);
     $('meta[name="theme-color"]').setAttribute("content", p.bg);
@@ -370,33 +400,33 @@
 
     $("#project").innerHTML = `
       <section class="p-hero">
-        <div class="p-hero__top label"><a href="index.html#work" class="p-back roll"><span data-t="← All work">← All work</span></a><span>${p.cat}</span></div>
+        <div class="p-hero__top label"><a href="${LP}index.html#work" class="p-back roll"><span data-t="${T.allWork}">${T.allWork}</span></a><span>${p.cat}</span></div>
         <h1 class="p-title">${lines.map(l => `<span class="line"><span>${l}</span></span>`).join("")}</h1>
         <div class="p-hero__row"><span class="p-sub">${p.sub}</span></div>
       </section>
       <div class="p-meta">
-        <div><span>Client</span>${p.client}</div>
-        <div><span>Discipline</span>${p.cat} — ${p.sub}</div>
-        <div><span>Designer</span>Majid Sanad</div>
+        <div><span>${T.client}</span>${p.client}</div>
+        <div><span>${T.discipline}</span>${p.cat} — ${p.sub}</div>
+        <div><span>${T.designer}</span>${T.me}</div>
       </div>
       <figure class="p-cover">${pic(p.cover, "100vw", p.title + " — " + p.sub)}</figure>
       <section class="p-about">
-        <h2><span class="line"><span>About this</span></span><span class="line"><span>project</span></span></h2>
+        <h2><span class="line"><span>${T.about[0]}</span></span><span class="line"><span>${T.about[1]}</span></span></h2>
         <div class="p-about__grid">${p.about.map(a => `<article class="reveal"><h3>${a[0]}</h3><p>${a[1]}</p></article>`).join("")}</div>
       </section>
       <section class="p-gallery">${gallery}</section>
       <section class="p-cta">
-        <p>Have a similar<br><em>project?</em></p>
-        <a class="contact__cta magnetic" href="${D.whatsapp}" target="_blank" rel="noopener" data-cursor="Say hi"><span>Let's talk</span><i><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M8 6h10v10" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></i></a>
+        <p>${T.similar}</p>
+        <a class="contact__cta magnetic" href="${D.whatsapp}" target="_blank" rel="noopener" data-cursor="${T.hi}"><span>${T.talk}</span><i><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M8 6h10v10" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></i></a>
       </section>
-      <a class="p-next" href="project.html?p=${next.slug}" data-cursor="Next">
-        <span class="label">Next project</span>
+      <a class="p-next" href="${LP}project.html?p=${next.slug}" data-cursor="${T.next}">
+        <span class="label">${T.nextProject}</span>
         <div class="p-next__title">${next.title}</div>
-        <div class="p-next__row"><span>${next.cat} — ${next.sub}</span><span>→</span></div>
+        <div class="p-next__row"><span>${next.cat} — ${next.sub}</span><span>${T.arrow}</span></div>
       </a>
       <footer class="foot p-foot">
-        <span>Majid Sanad</span><span>//</span><span>Graphic Designer — © 2026. All brands. All vision.</span>
-        <a href="#top" class="roll"><span data-t="Back to top ↑">Back to top ↑</span></a>
+        <span>${T.me}</span><span>//</span><span>${T.foot}</span>
+        <a href="#top" class="roll"><span data-t="${T.top}">${T.top}</span></a>
       </footer>`;
 
     $$(".p-cta .magnetic").forEach(magnetic);
