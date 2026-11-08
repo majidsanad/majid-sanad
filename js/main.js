@@ -198,7 +198,7 @@
       const extra = [["k102", "alatool"], ["k004", "sports-for-all"], ["k130", "frame-house"], ["k136", "sadeem"], ["k162", "do-not-give-it-a-chance"], ["k169", "cyberani-profile"], ["k182", "marasi"], ["k202", "alinma-fantasy"]];
       const items = [];
       D.projects.forEach((p, i) => { items.push([p.cover, p.slug, p.title]); if (extra[i]) items.push([extra[i][0], extra[i][1], D.projects.find(q => q.slug === extra[i][1]).title]); });
-      const html = items.map(([id, slug, title]) => `<a href="project.html?p=${slug}" data-cursor="View"><img src="${img(id)}" alt="${title}" loading="lazy"><span>${title}</span></a>`).join("");
+      const html = items.map(([id, slug, title]) => `<a href="project.html?p=${slug}" data-cursor="View"><img src="${img(id)}" alt="${title}" decoding="async"><span>${title}</span></a>`).join("");
       track.innerHTML = html + html.replace(/<a /g, '<a aria-hidden="true" tabindex="-1" ');
     }
 
@@ -217,20 +217,10 @@
       });
     });
 
-    /* marquee: slow, constant, follows scroll direction */
+    /* marquee band: CSS-driven loop (runs on the compositor) */
     $$(".js-marquee").forEach(m => {
       const inner = $(".marquee__inner", m);
       for (let i = 0; i < 3; i++) m.appendChild(inner.cloneNode(true));
-      let x = 0, dir = -1;
-      const speed = +m.dataset.speed || .5;
-      scrollers.push(({ vel }) => {
-        if (Math.abs(vel) > 1) dir = vel > 0 ? -1 : 1;
-        x += speed * dir * (reduce ? 0 : 1);
-        const w = inner.offsetWidth;
-        if (x <= -w) x += w;
-        if (x > 0) x -= w;
-        m.style.transform = `translate3d(${x}px,0,0)`;
-      });
     });
 
     /* horizontal work track */
@@ -431,11 +421,13 @@
 
   /* ---------- nav colour from the section under it ---------- */
   const nav = $(".nav");
+  let themed = null;
   const isLight = rgb => { const m = rgb.match(/\d+/g); return m ? (m[0] * .299 + m[1] * .587 + m[2] * .114) > 140 : false; };
   scrollers.push(() => {
     if (!nav) return;
     let light = false;
-    for (const s of $$("[data-theme], .p-hero, .p-about, .p-cover, .p-gallery, .p-next")) {
+    themed = themed || $$("[data-theme], .p-hero, .p-about, .p-cover, .p-gallery, .p-next");
+    for (const s of themed) {
       const r = s.getBoundingClientRect();
       if (r.top <= 30 && r.bottom > 30) {
         light = s.dataset.theme ? s.dataset.theme !== "black" : s.matches(".p-about, .p-next") || (s.matches(".p-hero") && isLight(getComputedStyle(s).backgroundColor));
@@ -470,13 +462,20 @@
     navY = y;
   });
 
-  /* ---------- master loop ---------- */
-  let lastY = scrollY, vel = 0;
+  /* ---------- master loop: idle when nothing moves ---------- */
+  let lastY = scrollY, vel = 0, activeUntil = performance.now() + 1500;
+  const kick = () => { activeUntil = performance.now() + 800; };
+  addEventListener("scroll", kick, { passive: true });
+  addEventListener("pointermove", kick, { passive: true });
+  addEventListener("resize", kick);
   (function frame() {
-    const y = scrollY;
-    vel = lerp(vel, y - lastY, .2);
-    lastY = y;
-    for (let i = 0; i < scrollers.length; i++) scrollers[i]({ y, vel });
+    const now = performance.now();
+    if (now < activeUntil) {
+      const y = scrollY;
+      vel = lerp(vel, y - lastY, .2);
+      lastY = y;
+      for (let i = 0; i < scrollers.length; i++) scrollers[i]({ y, vel });
+    }
     requestAnimationFrame(frame);
   })();
 })();
