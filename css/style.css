@@ -654,3 +654,13 @@ html[dir="rtl"] :is(.nav__cta, .consult__btn, .contact__cta):hover i { transform
 html[dir="rtl"] :is(.hero__strip, .marks__row, .band) { direction: ltr; }
 
 @media (max-width: 420px) { .hero__bottom { flex-wrap: wrap; gap: 14px 24px; } .hero__metric b { font-size: clamp(44px, 13vw, 60px); } }
+
+/* ===== Arabic font: Cairo ===== */
+html[lang="ar"] { --display: "Cairo", sans-serif; --text: "Cairo", sans-serif; }
+html[lang="ar"] .hero__statement { font-variation-settings: "wght" 700; font-weight: 700; line-height: 1.32; }
+html[lang="ar"] :is(.statement__title, .big-title, .p-title, .p-next__title, .p-about h2, .hchap .flex-word, .worked__list .a, .lettering__title, .marquee span, .menu__links span, .hcard__title) { font-variation-settings: "wght" 900; font-weight: 900; }
+html[lang="ar"] .consult__title, html[lang="ar"] .marks__title { font-variation-settings: "wght" 700; font-weight: 700; }
+/* the site name always stays in English */
+html[lang="ar"] .nav__logo, html[lang="ar"] [lang="en"] { font-family: "Anybody", "Montserrat", sans-serif; }
+html[lang="ar"] .nav__logo { font-variation-settings: "wdth" 100, "wght" 700; letter-spacing: -.01em !important; }
+html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { font-family: "Montserrat", sans-serif; letter-spacing: .06em !important; }

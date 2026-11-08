@@ -18,11 +18,11 @@
     D.workedAt = A.workedAt;
   }
   const T = AR ? {
-    view: "شاهد", next: "التالي", hi: "مرحباً", copied: "تم نسخ البريد ✓",
-    chapters: { Branding: ["الهويات", "العلامة ليست شعاراً، بل وعدٌ يُرى.", ""], Campaign: ["الحملات", "أفكار تحرّك الناس — حملات توعوية وإطلاقات ومواسم لجهات وطنية.", "dark"], Editorial: ["المطبوعات", "معلومات كثيفة تُعرض بهدوء — ملفات تعريفية وتقارير وكتيّبات.", ""] },
-    allWork: "→ كل الأعمال", client: "العميل", discipline: "المجال", designer: "المصمم", me: "ماجد سند",
-    about: ["عن", "المشروع"], similar: "عندك مشروع<br><em>مشابه؟</em>", talk: "لنتحدث", nextProject: "المشروع التالي", arrow: "←",
-    foot: "مصمم جرافيك — © 2026. كل العلامات، كل الرؤية.", top: "للأعلى ↑", lett: "خط عربي يدوي — ماجد سند"
+    view: "شوف", next: "التالي", hi: "هلا", copied: "تم نسخ الإيميل ✓",
+    chapters: { Branding: ["الهويات", "البراند مو شعار… البراند وعد تشوفه بعينك.", ""], Campaign: ["الحملات", "أفكار تحرّك الناس — حملات توعية وإطلاقات ومواسم لجهات وطنية.", "dark"], Editorial: ["المطبوعات", "معلومات كثيرة، بس تنعرض بهدوء — بروفايلات وتقارير وكتيّبات.", ""] },
+    allWork: "→ كل الأعمال", client: "العميل", discipline: "المجال", designer: "المصمم", me: "Majid Sanad",
+    about: ["عن", "المشروع"], similar: "عندك مشروع<br><em>زيه؟</em>", talk: "كلّمني", nextProject: "المشروع التالي", arrow: "←",
+    foot: "مصمم جرافيك — © 2026. كل البراندات، كل الرؤية.", top: "ارجع فوق ↑", lett: "خط عربي يدوي — ماجد سند"
   } : {
     view: "View", next: "Next", hi: "Say hi", copied: "Email copied ✓",
     chapters: { Branding: ["Branding", "A brand is not a logo. It's a promise made visible.", ""], Campaign: ["Campaigns", "Ideas that move people — awareness, launches and seasonal campaigns for national entities.", "dark"], Editorial: ["Editorials", "Dense information, made calm. Profiles, reports and brochures.", ""] },
@@ -32,8 +32,8 @@
   };
   // image ids: "p13" = cropped artboard, "k115" = original Links file
   const img = (id, size = "s") => size === "s" ? `img/w/s/${id}.jpg` : size === "m" ? `img/w/m/${id}.jpg` : `img/w/${id}.jpg`;
-  // responsive sources: the browser picks 900 / 1600 / 3000px for the screen
-  const srcset = id => `img/w/s/${id}.jpg 900w, img/w/m/${id}.jpg 1600w, img/w/${id}.jpg 3000w`;
+  // responsive sources: the browser picks 1000 / 2000 / 4000px for the screen
+  const srcset = id => `img/w/s/${id}.jpg 1000w, img/w/m/${id}.jpg 2000w, img/w/${id}.jpg 4000w`;
   const pic = (id, sizes, alt, extra = "") => `<img src="${img(id, "m")}" srcset="${srcset(id)}" sizes="${sizes}" alt="${alt}" ${extra}>`;
   const pad2 = n => String(n).padStart(2, "0");
   let vw = innerWidth, vh = innerHeight;
