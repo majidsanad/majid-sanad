@@ -383,7 +383,7 @@
       <section class="p-gallery">${gallery}</section>
       <section class="p-cta">
         <p>Have a similar<br><em>project?</em></p>
-        <a class="contact__cta magnetic" href="${D.whatsapp}" target="_blank" rel="noopener" data-cursor="Say hi"><span>Let's talk</span><i>↗</i></a>
+        <a class="contact__cta magnetic" href="${D.whatsapp}" target="_blank" rel="noopener" data-cursor="Say hi"><span>Let's talk</span><i><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M8 6h10v10" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></i></a>
       </section>
       <a class="p-next" href="project.html?p=${next.slug}" data-cursor="Next">
         <span class="label">Next project</span>

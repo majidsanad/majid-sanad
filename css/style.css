@@ -582,3 +582,7 @@ h1, h2, h3, p, figure { margin: 0; }
   .hero__strip, .marks__row { -webkit-mask-image: none; mask-image: none; }
   .hero__track { animation-duration: 60s; }
 }
+
+/* text icons drawn as SVG (iOS turns arrows and stars into emoji) */
+.ico { width: .9em; height: .9em; display: inline-block; vertical-align: -.08em; }
+.marquee b .ico { width: .8em; height: .8em; }
