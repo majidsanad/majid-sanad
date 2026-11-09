@@ -371,14 +371,57 @@
       `<li class="reveal"><span class="a">${w[0]}</span><span class="r">${w[1]}</span><span class="d">${w[2]}</span></li>`).join("");
 
     /* scroll-linked horizontal rows */
+    // rows marked js-drag also take a drag / swipe / sideways trackpad scroll on top of the scroll motion
+    const setX = el => {
+      let x = (el._base || 0) + (el._off || 0);
+      if (el._drag) {
+        const lim = Math.max(0, (el.scrollWidth - innerWidth) / 2 + 16);
+        x = clamp(x, -lim, lim); el._off = x - (el._base || 0);
+      }
+      el.style.setProperty("--x", x.toFixed(1) + "px");
+    };
     $$(".js-xscroll").forEach(el => {
       const dir = +el.dataset.dir || -1, amt = +el.dataset.amt || .3;
       scrollers.push(() => {
         const r = el.getBoundingClientRect();
         if (!inView(r, 200)) return;
         const p = clamp((vh - r.top) / (vh + r.height));
-        el.style.setProperty("--x", (dir * (p - .5) * amt * r.width).toFixed(1) + "px");
+        el._base = dir * (p - .5) * amt * r.width;
+        setX(el);
       });
+    });
+    $$(".js-drag").forEach(el => {
+      el._drag = true; el._off = 0;
+      let down = false, sx = 0, so = 0, lx = 0, lt = 0, v = 0, raf = 0, moved = 0;
+      const glide = () => {
+        v *= .94; el._off += v; setX(el);
+        if (Math.abs(v) > .3) raf = requestAnimationFrame(glide);
+      };
+      el.addEventListener("pointerdown", e => {
+        if (e.button) return;
+        down = true; moved = 0; sx = lx = e.clientX; so = el._off; lt = performance.now(); v = 0;
+        cancelAnimationFrame(raf); el.classList.add("is-drag");
+      });
+      addEventListener("pointermove", e => {
+        if (!down) return;
+        const now = performance.now();
+        v = (e.clientX - lx) / Math.max(1, now - lt) * 16; lx = e.clientX; lt = now;
+        moved = Math.max(moved, Math.abs(e.clientX - sx));
+        el._off = so + (e.clientX - sx); setX(el);
+      });
+      const up = () => {
+        if (!down) return;
+        down = false; el.classList.remove("is-drag");
+        if (performance.now() - lt < 80) raf = requestAnimationFrame(glide);
+      };
+      addEventListener("pointerup", up); addEventListener("pointercancel", up);
+      el.addEventListener("click", e => { if (moved > 6) { e.preventDefault(); e.stopPropagation(); } }, true);
+      el.addEventListener("dragstart", e => e.preventDefault());
+      el.addEventListener("wheel", e => {
+        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+        e.preventDefault(); cancelAnimationFrame(raf);
+        el._off -= e.deltaX; setX(el);
+      }, { passive: false });
     });
 
     /* about photo parallax */
