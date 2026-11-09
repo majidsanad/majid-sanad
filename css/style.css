@@ -715,3 +715,13 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 
 /* logo rows are driven from JS (pixel distances) */
 .marks__track { animation: none !important; }
+
+/* hero red word: typewriter */
+.roller.roller--type { display: inline; height: auto; overflow: visible; width: auto !important; white-space: nowrap; }
+.roller__t { color: var(--red); }
+.roller__caret {
+  display: inline-block; width: .07em; height: .82em; margin-left: .04em; vertical-align: -.04em;
+  background: var(--red); animation: caret 1s steps(1) infinite;
+}
+.roller.is-empty .roller__caret { margin-left: 0; }
+@keyframes caret { 50% { opacity: 0; } }

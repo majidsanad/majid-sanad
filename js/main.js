@@ -233,20 +233,27 @@
     /* hero: rolling word inside the statement */
     const roller = $(".js-roller");
     if (roller) {
-      const ws = $$(".roller__w", roller);
-      let cur = 0, timer;
-      const size = () => { roller.style.width = ws[cur].offsetWidth + "px"; };
-      const show = i => {
-        ws.forEach((w, k) => { w.classList.toggle("out", k === cur && k !== i); w.classList.toggle("on", k === i); });
-        cur = i; size();
-      };
-      show(0);
-      addEventListener("resize", size);
-      if (document.fonts) document.fonts.ready.then(size);
-      window.__startHero = () => {
+      // typewriter: the red word is typed, held, erased letter by letter, then the next one is typed
+      const words = $$(".roller__w", roller).map(w => w.textContent);
+      roller.classList.add("roller--type");
+      roller.innerHTML = `<span class="roller__t">${words[0]}</span><i class="roller__caret" aria-hidden="true"></i>`;
+      const t = $(".roller__t", roller);
+      let wi = 0;
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+      window.__startHero = async () => {
         if (reduce) return;
-        const step = () => { show((cur + 1) % ws.length); timer = setTimeout(step, 2400); };
-        timer = setTimeout(step, 2200);
+        await wait(1800);
+        for (;;) {
+          const w = words[wi];
+          for (let n = w.length; n >= 0; n--) { t.textContent = w.slice(0, n); await wait(45); }
+          roller.classList.add("is-empty");
+          await wait(260);
+          wi = (wi + 1) % words.length;
+          const nw = words[wi];
+          roller.classList.remove("is-empty");
+          for (let n = 1; n <= nw.length; n++) { t.textContent = nw.slice(0, n); await wait(85 + Math.random() * 50); }
+          await wait(2000);
+        }
       };
     }
 
