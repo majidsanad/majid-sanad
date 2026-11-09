@@ -30,7 +30,7 @@ window.PORTFOLIO = {
     {
       slug: "sadeem", no: "02.3", cat: "Branding", title: "Sadeem by Akwan", sub: "Visual Identity",
       client: "Akwan", bg: "#EE3D3F", fg: "#0A0A0A",
-      cover: "k098", hover: "p30", gallery: ["p30","p31",["k104","k136"],"p32","p33","k123","p34"],
+      cover: "k098", hover: "p30", gallery: ["p30","p33","k123"],
       about: [
         ["About Sadeem", "Sadeem is an educational initiative by Akwan, inspired by the cosmic concept of a nebula — a space where stars gather and ideas take shape. The platform delivers professional workshops for internal teams and external creatives, covering a wide range of disciplines across the creative industry."],
         ["Challenges", "The main challenge was building a brand that clearly belongs to Akwan while maintaining its own independent identity — a system that stays visually subtle across applications, allowing each creative discipline to express itself without the brand becoming overly dominant."],
