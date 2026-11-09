@@ -80,7 +80,7 @@ window.PORTFOLIO = {
     {
       slug: "do-not-give-it-a-chance", no: "04.3", cat: "Campaign", title: "Do Not Give It a Chance", sub: "Awareness Campaign",
       client: "National Cybersecurity Authority", bg: "#0A0A0A", fg: "#EFEFEF",
-      cover: "k190", hover: "k162", stack: true, mob: { p64: ["p64a","p64b","p64c","p64d"], p65: ["p65b","p65a","p65d","p65c"] }, gallery: ["p64",["k164","k162"],"p65"],
+      cover: "k190", hover: "k162", stack: true, mob: { p64: ["p64a","p64b","p64c","p64d"], p65: ["p65b","p65a","p65d","p65c"] }, gallery: ["p64","p65"],
       about: [
         ["NCA", "The National Cybersecurity Authority is the Saudi entity responsible for strengthening cybersecurity and protecting the Kingdom’s digital infrastructure through regulations, awareness programs, and national initiatives."],
         ["The Campaign", "“Do not Give it a Chance” is an annual awareness campaign created to raise public awareness around cyber risks and promote safer digital habits — enabling two-factor authentication, using parental controls, and avoiding untrusted public networks."],
