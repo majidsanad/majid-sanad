@@ -31,9 +31,10 @@
     foot: "Graphic Designer — © 2026. All brands. All vision.", top: "Back to top ↑", lett: "Arabic lettering by Majid Sanad"
   };
   // image ids: "p13" = cropped artboard, "k115" = original Links file
-  const img = (id, size = "s") => size === "s" ? `img/w/s/${id}.jpg` : size === "m" ? `img/w/m/${id}.jpg` : `img/w/${id}.jpg`;
+  const IV = "?i=2"; // bump to force browsers to re-download images
+  const img = (id, size = "s") => (size === "s" ? `img/w/s/${id}.jpg` : size === "m" ? `img/w/m/${id}.jpg` : `img/w/${id}.jpg`) + IV;
   // responsive sources: the browser picks 1000 / 2000 / 4000px for the screen
-  const srcset = id => `img/w/s/${id}.jpg 1000w, img/w/m/${id}.jpg 2000w, img/w/${id}.jpg 4000w`;
+  const srcset = id => `img/w/s/${id}.jpg${IV} 1000w, img/w/m/${id}.jpg${IV} 2000w, img/w/${id}.jpg${IV} 4000w`;
   const pic = (id, sizes, alt, extra = "") => `<img src="${img(id, "m")}" srcset="${srcset(id)}" sizes="${sizes}" alt="${alt}" ${extra}>`;
   const pad2 = n => String(n).padStart(2, "0");
   let vw = innerWidth, vh = innerHeight;
@@ -288,7 +289,7 @@
 
     /* lettering: cards start scattered around the word, then settle into two rows that slide */
     const LETTERING = [{"id": "p88", "bg": "#000000", "src": "pdf"}, {"id": "k150", "bg": "#020202", "src": "links"}, {"id": "p89", "bg": "#000000", "src": "pdf"}, {"id": "p90", "bg": "#000000", "src": "pdf"}, {"id": "k213", "bg": "#ca191f", "src": "links"}, {"id": "p91", "bg": "#000000", "src": "pdf"}, {"id": "p92", "bg": "#000000", "src": "pdf"}, {"id": "k084", "bg": "#000000", "src": "links"}, {"id": "p93", "bg": "#000000", "src": "pdf"}, {"id": "p94", "bg": "#000000", "src": "pdf"}, {"id": "k215", "bg": "#e0e0e0", "src": "links"}, {"id": "p95", "bg": "#000000", "src": "pdf"}, {"id": "p96", "bg": "#000000", "src": "pdf"}, {"id": "k153", "bg": "#000000", "src": "links"}, {"id": "p97", "bg": "#000000", "src": "pdf"}, {"id": "p99", "bg": "#000000", "src": "pdf"}, {"id": "p100", "bg": "#000000", "src": "pdf"}, {"id": "p101", "bg": "#000000", "src": "pdf"}, {"id": "p102", "bg": "#000000", "src": "pdf"}];
-    const lsrc = it => it.src === "links" ? img(it.id, "m") : `img/lt/${it.id}.jpg`;
+    const lsrc = it => it.src === "links" ? img(it.id, "m") : `img/lt/${it.id}.jpg${IV}`;
     const half = Math.ceil(LETTERING.length / 2);
     $$(".lettering__row").forEach((row, r) => {
       row.innerHTML = (r ? LETTERING.slice(half) : LETTERING.slice(0, half))
