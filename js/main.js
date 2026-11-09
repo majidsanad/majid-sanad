@@ -316,14 +316,64 @@
       hbar.style.setProperty("--hp", p);
     });
 
-    /* lettering: cards start scattered around the word, then settle into two rows that slide */
-    const LETTERING = [{"id": "p88", "bg": "#000000", "src": "pdf"}, {"id": "k150", "bg": "#020202", "src": "links"}, {"id": "p89", "bg": "#000000", "src": "pdf"}, {"id": "p90", "bg": "#000000", "src": "pdf"}, {"id": "k213", "bg": "#ca191f", "src": "links"}, {"id": "p91", "bg": "#000000", "src": "pdf"}, {"id": "p92", "bg": "#000000", "src": "pdf"}, {"id": "k084", "bg": "#000000", "src": "links"}, {"id": "p93", "bg": "#000000", "src": "pdf"}, {"id": "p94", "bg": "#000000", "src": "pdf"}, {"id": "k215", "bg": "#e0e0e0", "src": "links"}, {"id": "p95", "bg": "#000000", "src": "pdf"}, {"id": "p96", "bg": "#000000", "src": "pdf"}, {"id": "k153", "bg": "#000000", "src": "links"}, {"id": "p97", "bg": "#000000", "src": "pdf"}, {"id": "p99", "bg": "#000000", "src": "pdf"}, {"id": "p100", "bg": "#000000", "src": "pdf"}, {"id": "p101", "bg": "#000000", "src": "pdf"}, {"id": "p102", "bg": "#000000", "src": "pdf"}];
-    const lsrc = it => it.src === "links" ? img(it.id, "m") : `img/lt/${it.id}.jpg${IV}`;
-    const half = Math.ceil(LETTERING.length / 2);
-    $$(".lettering__row").forEach((row, r) => {
-      row.innerHTML = (r ? LETTERING.slice(half) : LETTERING.slice(0, half))
-        .map(it => `<figure style="--bg:${it.bg}"><img src="${lsrc(it)}" alt="${T.lett}" loading="lazy"></figure>`).join("");
-    });
+    /* lettering: vertical drum carousel. Cards sit on a turning cylinder; it steps on its own and can be dragged */
+    const drum = $(".js-drum");
+    if (drum) {
+      const N = 14;
+      const stage = $(".drum__stage", drum), counter = $(".js-drum-n", drum);
+      stage.innerHTML = Array.from({ length: N }, (_, i) => {
+        const id = "l" + pad2(i + 1);
+        return `<figure class="drum__card"><img src="img/lt/s/${id}.jpg${IV}" srcset="img/lt/s/${id}.jpg${IV} 640w, img/lt/${id}.jpg${IV} 1200w" sizes="(max-width: 860px) 70vw, 30vw" alt="${T.lett}" ${i < 4 || i > N - 3 ? "" : 'loading="lazy"'} draggable="false"></figure>`;
+      }).join("");
+      const cards = $$(".drum__card", stage);
+      const STEP = 40;                       // degrees between neighbouring cards
+      let pos = 0, target = 0, H = 0, R = 0, dragging = false, hover = false, last = 0, visible = false;
+      const measure = () => { H = cards[0].offsetHeight; R = H / 2 / Math.tan(STEP / 2 * Math.PI / 180); };
+      const wrap = d => ((d % N) + N * 1.5) % N - N / 2;   // shortest offset, -N/2..N/2
+      const render = () => {
+        cards.forEach((c, i) => {
+          const d = wrap(i - pos), th = d * STEP, rad = th * Math.PI / 180;
+          if (Math.abs(th) > 100) { c.style.visibility = "hidden"; return; }
+          c.style.visibility = "";
+          c.style.transform = `translate3d(-50%,-50%,0) translateY(${(R * 1.1 * Math.sin(rad)).toFixed(1)}px) translateZ(${(R * Math.cos(rad) - R).toFixed(1)}px) rotateX(${(-th).toFixed(2)}deg)`;
+          c.style.zIndex = 100 - Math.round(Math.abs(d) * 10);
+          c.style.setProperty("--dim", Math.min(.85, Math.abs(d) * .32).toFixed(3));
+        });
+        const n = ((Math.round(pos) % N) + N) % N;
+        counter.textContent = pad2(n + 1);
+      };
+      const go = k => { target = Math.round(target) + k; last = performance.now(); };
+      $(".js-drum-prev", drum).addEventListener("click", () => go(-1));
+      $(".js-drum-next", drum).addEventListener("click", () => go(1));
+      drum.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") hover = true; });
+      drum.addEventListener("pointerleave", () => { hover = false; });
+      // drag: up/down with a mouse, sideways with a finger (so the page still scrolls)
+      let sx = 0, sy = 0, sp = 0, moved = false, pid = null;
+      stage.addEventListener("pointerdown", e => {
+        dragging = true; moved = false; pid = e.pointerId; sx = e.clientX; sy = e.clientY; sp = pos;
+        drum.classList.add("is-drag");
+      });
+      addEventListener("pointermove", e => {
+        if (!dragging || e.pointerId !== pid) return;
+        const d = e.pointerType === "mouse" ? e.clientY - sy : e.clientX - sx;
+        if (Math.abs(d) > 4) moved = true;
+        if (moved && e.pointerType !== "mouse" && Math.abs(e.clientY - sy) > Math.abs(e.clientX - sx) * 1.2 && Math.abs(d) < 12) { dragging = false; drum.classList.remove("is-drag"); return; }
+        pos = target = sp - d / (H * .9);
+      });
+      const end = () => { if (!dragging) return; dragging = false; drum.classList.remove("is-drag"); target = Math.round(pos); last = performance.now(); };
+      addEventListener("pointerup", end); addEventListener("pointercancel", end);
+      new IntersectionObserver(es => es.forEach(en => { visible = en.isIntersecting; })).observe(drum);
+      addEventListener("resize", () => { measure(); render(); });
+      measure(); render(); last = performance.now();
+      (function tick(t) {
+        if (visible) {
+          if (!dragging && !hover && !reduce && t - last > 2600) go(1);
+          if (!dragging) pos += (target - pos) * .085;
+          render();
+        }
+        requestAnimationFrame(tick);
+      })(performance.now());
+    }
 
     /* marks: real vector logos, two slow rows */
     const tracks = $$(".js-mtrack");
