@@ -323,7 +323,11 @@
     if (tracks.length) {
       Promise.all(Array.from({ length: 28 }, (_, i) => fetch(`img/logos/logo-${pad2(i + 1)}.svg`).then(r => r.text()).catch(() => "")))
         .then(svgs => {
-          const cell = svg => `<span class="mk">${svg}</span>`;
+          // phones: logos as images (drawn once) instead of inline vectors that iOS re-rasterises while moving
+          const asImg = svg => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+            svg.replace(/currentColor/g, "#EFEFED").replace(/var\(--logo-bg[^)]*\)/g, "#0B0B0B"));
+          const cell = svg => fine ? `<span class="mk">${svg}</span>`
+            : `<span class="mk"><img src="${asImg(svg)}" alt="" decoding="async"></span>`;
           [svgs.slice(0, 14), svgs.slice(14)].forEach((set, r) => {
             const html = set.filter(Boolean).map(cell).join("");
             tracks[r].innerHTML = html + html;
