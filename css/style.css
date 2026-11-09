@@ -672,3 +672,21 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 @media (max-width: 600px) { .mbr { display: inline; } }
 /* pill, metrics and scroll link: sentence case */
 .hero__card :is(.hero__pill, .hero__metric span, .hero__scroll) { text-transform: none; letter-spacing: 0; }
+
+/* CTA fill effect: the cursor disappears and a circle floods the button from the entry point */
+.cursor { transition: width .45s var(--ease-out), height .45s var(--ease-out), margin .45s var(--ease-out), opacity .25s; }
+.cursor.is-hidden { width: 0; height: 0; margin: 0; opacity: 0; }
+.cta-fx { position: relative; overflow: hidden; isolation: isolate; transition: color .45s var(--ease-out) !important; }
+.cta-fx > .fx {
+  position: absolute; z-index: -1; pointer-events: none; border-radius: 50%;
+  left: var(--fx-x, 50%); top: var(--fx-y, 50%); width: var(--fx-d, 0); height: var(--fx-d, 0);
+  transform: translate(-50%, -50%) scale(0); transition: transform .6s var(--ease-out);
+  background: var(--fx-bg);
+}
+.cta-fx.fx-on > .fx { transform: translate(-50%, -50%) scale(1); }
+.nav__cta.cta-fx { --fx-bg: var(--ink); }
+.nav .nav__cta.cta-fx:hover, .nav:not(.on-light) .nav__cta.cta-fx:hover { background: var(--red); color: var(--paper); }
+.consult__btn.cta-fx { --fx-bg: var(--paper); }
+.consult__btn.cta-fx:hover { background: var(--ink); color: var(--ink); }
+.contact__cta.cta-fx { --fx-bg: var(--paper); }
+.contact__cta.cta-fx:hover { background: var(--red); color: var(--ink); }

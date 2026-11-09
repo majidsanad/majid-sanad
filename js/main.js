@@ -98,8 +98,10 @@
     })();
     document.addEventListener("pointerover", e => {
       const t = e.target.closest("[data-cursor], a, button");
-      cursor.classList.toggle("is-big", !!(t && t.dataset.cursor));
-      cursor.classList.toggle("is-link", !!(t && !t.dataset.cursor));
+      const fx = !!(t && t.matches(".nav__cta, .consult__btn, .contact__cta"));
+      cursor.classList.toggle("is-hidden", fx);
+      cursor.classList.toggle("is-big", !fx && !!(t && t.dataset.cursor));
+      cursor.classList.toggle("is-link", !fx && !!(t && !t.dataset.cursor));
       if (t && t.dataset.cursor) label.textContent = t.dataset.cursor;
     });
   }
@@ -118,6 +120,26 @@
     });
   }
   $$(".magnetic").forEach(magnetic);
+
+  /* ---------- CTA buttons: a circle grows from where the pointer enters, shrinks to where it leaves ---------- */
+  function ctaFill(el) {
+    if (!fine || el.dataset.fx) return;
+    el.dataset.fx = "1";
+    el.classList.add("cta-fx");
+    const f = document.createElement("span");
+    f.className = "fx"; f.setAttribute("aria-hidden", "true");
+    el.prepend(f);
+    const at = e => {
+      const r = el.getBoundingClientRect();
+      const x = e.clientX - r.left, y = e.clientY - r.top;
+      const d = 2 * Math.hypot(Math.max(x, r.width - x), Math.max(y, r.height - y));
+      el.style.setProperty("--fx-x", x + "px"); el.style.setProperty("--fx-y", y + "px"); el.style.setProperty("--fx-d", d + "px");
+    };
+    el.addEventListener("pointerenter", e => { at(e); el.classList.add("fx-on"); });
+    el.addEventListener("pointerleave", e => { at(e); el.classList.remove("fx-on"); });
+  }
+  const initFx = () => $$(".nav__cta, .consult__btn, .contact__cta").forEach(ctaFill);
+  initFx();
 
   /* ---------- menu ---------- */
   const burger = $(".nav__burger");
@@ -431,6 +453,7 @@
       </footer>`;
 
     $$(".p-cta .magnetic").forEach(magnetic);
+    initFx();
 
     // rows: give every image in a row the row's average aspect ratio, so nothing is cropped hard
     $$(".g-row").forEach(row => {
