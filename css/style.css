@@ -814,3 +814,6 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 .contact { padding-top: var(--sec); }
 /* lettering head: same pattern as Marks & Logotypes */
 .lettering--drum .lettering__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: clamp(28px, 4vw, 56px); }
+
+/* phones: the posters take the vertical swipe (reels style); the page scrolls from outside them */
+@media (max-width: 600px) { .drum { touch-action: none; } }

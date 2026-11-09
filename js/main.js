@@ -320,10 +320,11 @@
        Front poster full size; the ones behind get smaller and peek out to the sides (vertically on phones). */
     const drum = $(".js-drum");
     if (drum) {
-      const N = 14;
-      const stage = $(".drum__stage", drum), counter = $(".js-drum-n");
-      stage.innerHTML = Array.from({ length: N }, (_, i) => {
-        const id = "l" + pad2(i + 1);
+      const IDS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];   // l01 (Awaidak Al Mashi) left out
+      const N = IDS.length;
+      const stage = $(".drum__stage", drum);
+      stage.innerHTML = IDS.map((n, i) => {
+        const id = "l" + pad2(n);
         return `<figure class="drum__card" data-i="${i}"><img src="img/lt/s/${id}.jpg${IV}" srcset="img/lt/s/${id}.jpg${IV} 640w, img/lt/${id}.jpg${IV} 1200w" sizes="(max-width: 600px) 75vw, 40vw" alt="${T.lett}" draggable="false"></figure>`;
       }).join("");
       const cards = $$(".drum__card", stage);
@@ -351,12 +352,9 @@
           c.style.zIndex = 100 - Math.round(ad * 10);
           c.style.opacity = ad > SHOW ? Math.max(0, 1 - (ad - SHOW) / .7).toFixed(3) : 1;
         });
-        counter.textContent = pad2(((Math.round(pos) % N) + N) % N + 1);
       };
       const animTo = t => { from = pos; to = t; t0 = performance.now(); };
       const go = k => animTo(Math.round(t0 + DUR > performance.now() ? to : pos) + k);
-      $(".js-drum-prev").addEventListener("click", () => go(-1));
-      $(".js-drum-next").addEventListener("click", () => go(1));
       drum.addEventListener("keydown", e => {
         if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); go(1); }
         if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); go(-1); }
@@ -372,14 +370,15 @@
       }, { passive: false });
       // drag / swipe: along the stack's own direction (phones: sideways swipe also works, so the page can still scroll)
       let sx = 0, sy = 0, sp = 0, pid = null;
-      stage.addEventListener("pointerdown", e => { dragging = true; moved = false; pid = e.pointerId; sx = e.clientX; sy = e.clientY; sp = pos; t0 = -1e9; drum.classList.add("is-drag"); });
+      let downT = 0;
+      stage.addEventListener("pointerdown", e => { downT = performance.now(); dragging = true; moved = false; pid = e.pointerId; sx = e.clientX; sy = e.clientY; sp = pos; t0 = -1e9; drum.classList.add("is-drag"); });
       addEventListener("pointermove", e => {
         if (!dragging || e.pointerId !== pid) return;
         const dy = e.clientY - sy, dx = e.clientX - sx;
         if (Math.abs(dx) > 5 || Math.abs(dy) > 5) moved = true;
-        if (e.pointerType !== "mouse" && Math.abs(dy) > Math.abs(dx) * 1.2 && Math.abs(dx) < 12 && !(V && false)) { dragging = false; drum.classList.remove("is-drag"); animTo(Math.round(pos)); return; }
-        const d = V && e.pointerType === "mouse" ? dy : dx;
-        pos = sp - d / (V ? H * .5 : Math.max(P * 1.4, 90));
+        if (!V && e.pointerType !== "mouse" && Math.abs(dy) > Math.abs(dx) * 1.2 && Math.abs(dx) < 12) { dragging = false; drum.classList.remove("is-drag"); animTo(Math.round(pos)); return; }
+        const d = V ? dy : dx;              // phones: up / down like reels; wider screens: sideways
+        pos = sp + Math.max(-1, Math.min(1, -d / (V ? H * .5 : Math.max(P * 1.4, 90))));
         render();
       });
       const end = e => {
@@ -389,7 +388,9 @@
           const c = e.target.closest && e.target.closest(".drum__card");
           if (c) { const d = wrap(+c.dataset.i - pos); animTo(Math.round(pos + d)); return; }
         }
-        animTo(Math.round(pos));
+        // like reels: a swipe moves exactly one poster, whichever way it went; a quick flick is enough
+        const moveBy = pos - sp, fast = Math.abs(moveBy) / Math.max(1, performance.now() - downT) * 1000;
+        animTo(Math.abs(moveBy) > .12 || fast > 1.2 ? Math.round(sp) + Math.sign(moveBy) : Math.round(sp));
       };
       addEventListener("pointerup", end); addEventListener("pointercancel", end);
       new IntersectionObserver(es => es.forEach(en => { visible = en.isIntersecting; })).observe(drum);
