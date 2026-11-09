@@ -255,7 +255,7 @@
     if (track) {
       const extra = [["k102", "alatool"], ["k004", "sports-for-all"], ["k097", "frame-house"], ["k123", "sadeem"], ["k162", "do-not-give-it-a-chance"], ["k169", "cyberani-profile"], ["k182", "marasi"], ["k202", "alinma-fantasy"]];
       const items = [];
-      const SKIP = ["cyberani-profile", "alinma-fantasy", "bina-ehsan"];
+      const SKIP = ["cyberani-profile", "alinma-fantasy"];
       D.projects.forEach((p, i) => { if (!SKIP.includes(p.slug)) items.push([p.cover, p.slug, p.title]); if (extra[i] && !SKIP.includes(extra[i][1])) items.push([extra[i][0], extra[i][1], D.projects.find(q => q.slug === extra[i][1]).title]); });
       const html = items.map(([id, slug, title]) => `<a href="${LP}project.html?p=${slug}" data-cursor="${T.view}">${pic(id, "(max-width: 860px) 140px, 260px", title, 'decoding="async"')}<span>${title}</span></a>`).join("");
       track.innerHTML = html + html.replace(/<a /g, '<a aria-hidden="true" tabindex="-1" ');

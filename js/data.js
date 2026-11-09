@@ -98,16 +98,6 @@ window.PORTFOLIO = {
       ]
     },
     {
-      slug: "bina-ehsan", no: "04.5", cat: "Campaign", title: "Bina Ehsan", sub: "Giving Campaign",
-      client: "Ehsan — National Platform for Charitable Work", bg: "#0A0A0A", fg: "#EFEFEF",
-      cover: "k073", hover: "k071", gallery: ["p72",["k072","k074"],"p73"],
-      about: [
-        ["Ehsan", "The Saudi National Platform for Charitable Work is a national digital platform that enables and regulates charitable giving in the Kingdom, providing a trusted environment for donations across humanitarian, social, and development causes."],
-        ["Bina Ehsan", "A campaign highlighting the impact of giving across religious, social, educational, and medical fields — focusing on the idea that Ehsan is not only about the act of giving, but about the sense of reassurance and human stability it creates within communities."],
-        ["Our Work", "The creative direction adopts a simple and expressive visual language, where each scene reflects a specific area of impact rather than the act of donation itself — communicating calmness, peace, and the stability that comes from contributing to meaningful causes."]
-      ]
-    },
-    {
       slug: "marasi", no: "05.1", cat: "Editorial", title: "Marasi by Retal", sub: "Brochure",
       client: "Retal Urban Development", bg: "#0A0A0A", fg: "#EFEFEF",
       cover: "k070", hover: "k182", gallery: ["p76","k182",["k069","k038"],"p77","p78"],
