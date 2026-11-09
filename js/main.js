@@ -629,3 +629,15 @@
     requestAnimationFrame(frame);
   })();
 })();
+
+/* meet: chips swap the big picture */
+(() => {
+  const pic = document.querySelector(".js-meet-pic");
+  if (!pic) return;
+  document.querySelectorAll(".meet__chip").forEach(b => b.addEventListener("click", () => {
+    if (b.classList.contains("is-on")) return;
+    document.querySelectorAll(".meet__chip").forEach(c => c.classList.toggle("is-on", c === b));
+    pic.classList.add("is-swap");
+    setTimeout(() => { pic.src = b.dataset.src; pic.onload = () => pic.classList.remove("is-swap"); }, 250);
+  }));
+})();
