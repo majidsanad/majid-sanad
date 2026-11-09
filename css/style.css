@@ -670,3 +670,5 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 .roller--plain .roller__w::before { content: none; }
 .mbr { display: none; }
 @media (max-width: 600px) { .mbr { display: inline; } }
+/* pill, metrics and scroll link: sentence case */
+.hero__card :is(.hero__pill, .hero__metric span, .hero__scroll) { text-transform: none; letter-spacing: 0; }
