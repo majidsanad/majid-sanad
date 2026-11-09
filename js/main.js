@@ -231,7 +231,7 @@
     /* hero: strip of work, looping slowly */
     const track = $(".js-strip .hero__track");
     if (track) {
-      const extra = [["k102", "alatool"], ["k004", "sports-for-all"], ["k130", "frame-house"], ["k136", "sadeem"], ["k162", "do-not-give-it-a-chance"], ["k169", "cyberani-profile"], ["k182", "marasi"], ["k202", "alinma-fantasy"]];
+      const extra = [["k102", "alatool"], ["k004", "sports-for-all"], ["k097", "frame-house"], ["k123", "sadeem"], ["k162", "do-not-give-it-a-chance"], ["k169", "cyberani-profile"], ["k182", "marasi"], ["k202", "alinma-fantasy"]];
       const items = [];
       const SKIP = ["cyberani-profile", "alinma-fantasy", "bina-ehsan"];
       D.projects.forEach((p, i) => { if (!SKIP.includes(p.slug)) items.push([p.cover, p.slug, p.title]); if (extra[i] && !SKIP.includes(extra[i][1])) items.push([extra[i][0], extra[i][1], D.projects.find(q => q.slug === extra[i][1]).title]); });
