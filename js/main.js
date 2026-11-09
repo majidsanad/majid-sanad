@@ -186,7 +186,7 @@
     const a = e.target.closest("a[href]");
     if (!a || a.target === "_blank" || e.metaKey || e.ctrlKey) return;
     const href = a.getAttribute("href");
-    if (!/^(ar\/)?(index\.html|project\.html)/.test(href)) return;
+    if (!/^(ar\/)?(index\.html|project\.html|about\.html)/.test(href)) return;
     e.preventDefault();
     if (reduce) { location.href = href; return; }
     curtain.classList.remove("out"); curtain.classList.add("in");
@@ -555,6 +555,23 @@
     requestAnimationFrame(() => document.body.classList.add("loaded"));
   }
 
+  /* =========================================================
+     ABOUT PAGE
+     ========================================================= */
+  if (page === "about") {
+    $(".js-worked").innerHTML = D.workedAt.map(w =>
+      `<li class="reveal"><span class="a">${w[0]}</span><span class="r">${w[1]}</span><span class="d">${w[2]}</span></li>`).join("");
+    $(".js-clients").innerHTML = D.clients.map(c => `<li class="reveal">${c}</li>`).join("");
+    $$(".p-cta .magnetic").forEach(magnetic);
+    const ph = $(".ab-photo");
+    scrollers.push(() => {
+      const r = ph.getBoundingClientRect();
+      if (!inView(r)) return;
+      ph.style.setProperty("--pc", (1.12 - clamp((vh - r.top) / (vh + r.height)) * .12).toFixed(3));
+    });
+    requestAnimationFrame(() => document.body.classList.add("loaded"));
+  }
+
   observeReveals();
 
   /* ---------- nav colour from the section under it ---------- */
@@ -628,16 +645,4 @@
     }
     requestAnimationFrame(frame);
   })();
-})();
-
-/* meet: chips swap the big picture */
-(() => {
-  const pic = document.querySelector(".js-meet-pic");
-  if (!pic) return;
-  document.querySelectorAll(".meet__chip").forEach(b => b.addEventListener("click", () => {
-    if (b.classList.contains("is-on")) return;
-    document.querySelectorAll(".meet__chip").forEach(c => c.classList.toggle("is-on", c === b));
-    pic.classList.add("is-swap");
-    setTimeout(() => { pic.src = b.dataset.src; pic.onload = () => pic.classList.remove("is-swap"); }, 250);
-  }));
 })();
