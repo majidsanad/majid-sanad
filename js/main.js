@@ -316,59 +316,64 @@
       hbar.style.setProperty("--hp", p);
     });
 
-    /* lettering: vertical drum carousel. Cards sit on a turning cylinder; it steps on its own and can be dragged */
+    /* lettering: stacked carousel. The front poster is full size; the ones behind get smaller and
+       peek out as thin strips above and below. The next one slides up from behind to the front. */
     const drum = $(".js-drum");
     if (drum) {
       const N = 14;
-      const stage = $(".drum__stage", drum), counter = $(".js-drum-n", drum);
+      const stage = $(".drum__stage", drum);
       stage.innerHTML = Array.from({ length: N }, (_, i) => {
         const id = "l" + pad2(i + 1);
-        return `<figure class="drum__card"><img src="img/lt/s/${id}.jpg${IV}" srcset="img/lt/s/${id}.jpg${IV} 640w, img/lt/${id}.jpg${IV} 1200w" sizes="(max-width: 860px) 70vw, 30vw" alt="${T.lett}" ${i < 4 || i > N - 3 ? "" : 'loading="lazy"'} draggable="false"></figure>`;
+        return `<figure class="drum__card"><img src="img/lt/s/${id}.jpg${IV}" srcset="img/lt/s/${id}.jpg${IV} 640w, img/lt/${id}.jpg${IV} 1200w" sizes="(max-width: 860px) 70vw, 30vw" alt="${T.lett}" draggable="false"></figure>`;
       }).join("");
       const cards = $$(".drum__card", stage);
-      const STEP = 40;                       // degrees between neighbouring cards
-      let pos = 0, target = 0, H = 0, R = 0, dragging = false, hover = false, last = 0, visible = false;
-      const measure = () => { H = cards[0].offsetHeight; R = H / 2 / Math.tan(STEP / 2 * Math.PI / 180); };
-      const wrap = d => ((d % N) + N * 1.5) % N - N / 2;   // shortest offset, -N/2..N/2
+      const SHOW = 3;            // posters visible above and below the front one
+      const SHRINK = .1;         // each level back is 10% smaller
+      const HOLD = 1300, DUR = 650;
+      let pos = 0, from = 0, to = 0, t0 = 0, H = 0, P = 0, dragging = false, hover = false, visible = false, last = 0;
+      const measure = () => { H = cards[0].offsetHeight; P = H * .065; };
+      const wrap = d => ((d % N) + N * 1.5) % N - N / 2;
+      const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
       const render = () => {
         cards.forEach((c, i) => {
-          const d = wrap(i - pos), th = d * STEP, rad = th * Math.PI / 180;
-          if (Math.abs(th) > 100) { c.style.visibility = "hidden"; return; }
+          const d = wrap(i - pos), ad = Math.abs(d);
+          if (ad > SHOW + .6) { c.style.visibility = "hidden"; return; }
           c.style.visibility = "";
-          c.style.transform = `translate3d(-50%,-50%,0) translateY(${(R * 1.1 * Math.sin(rad)).toFixed(1)}px) translateZ(${(R * Math.cos(rad) - R).toFixed(1)}px) rotateX(${(-th).toFixed(2)}deg)`;
-          c.style.zIndex = 100 - Math.round(Math.abs(d) * 10);
-          c.style.setProperty("--dim", Math.min(.85, Math.abs(d) * .32).toFixed(3));
+          const sc = 1 - SHRINK * ad;
+          const y = Math.sign(d) * (H / 2 * (1 - sc) + P * ad);
+          c.style.transform = `translate3d(-50%, calc(-50% + ${y.toFixed(1)}px), 0) scale(${sc.toFixed(4)})`;
+          c.style.zIndex = 100 - Math.round(ad * 10);
+          c.style.opacity = ad > SHOW ? (1 - (ad - SHOW) / .6).toFixed(3) : 1;
         });
-        const n = ((Math.round(pos) % N) + N) % N;
-        counter.textContent = pad2(n + 1);
       };
-      const go = k => { target = Math.round(target) + k; last = performance.now(); };
-      $(".js-drum-prev", drum).addEventListener("click", () => go(-1));
-      $(".js-drum-next", drum).addEventListener("click", () => go(1));
+      const go = k => { from = pos; to = Math.round(to) + k; t0 = performance.now(); last = t0 + DUR; };
       drum.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") hover = true; });
       drum.addEventListener("pointerleave", () => { hover = false; });
       // drag: up/down with a mouse, sideways with a finger (so the page still scrolls)
-      let sx = 0, sy = 0, sp = 0, moved = false, pid = null;
-      stage.addEventListener("pointerdown", e => {
-        dragging = true; moved = false; pid = e.pointerId; sx = e.clientX; sy = e.clientY; sp = pos;
-        drum.classList.add("is-drag");
-      });
+      let sx = 0, sy = 0, sp = 0, pid = null;
+      stage.addEventListener("pointerdown", e => { dragging = true; pid = e.pointerId; sx = e.clientX; sy = e.clientY; sp = pos; drum.classList.add("is-drag"); });
       addEventListener("pointermove", e => {
         if (!dragging || e.pointerId !== pid) return;
-        const d = e.pointerType === "mouse" ? e.clientY - sy : e.clientX - sx;
-        if (Math.abs(d) > 4) moved = true;
-        if (moved && e.pointerType !== "mouse" && Math.abs(e.clientY - sy) > Math.abs(e.clientX - sx) * 1.2 && Math.abs(d) < 12) { dragging = false; drum.classList.remove("is-drag"); return; }
-        pos = target = sp - d / (H * .9);
+        const dy = e.clientY - sy, dx = e.clientX - sx;
+        if (e.pointerType !== "mouse" && Math.abs(dy) > Math.abs(dx) * 1.2 && Math.abs(dx) < 12) { dragging = false; drum.classList.remove("is-drag"); return; }
+        pos = sp - (e.pointerType === "mouse" ? dy : dx) / (H * .5);
       });
-      const end = () => { if (!dragging) return; dragging = false; drum.classList.remove("is-drag"); target = Math.round(pos); last = performance.now(); };
+      const end = () => {
+        if (!dragging) return;
+        dragging = false; drum.classList.remove("is-drag");
+        from = pos; to = Math.round(pos); t0 = performance.now(); last = t0 + DUR;
+      };
       addEventListener("pointerup", end); addEventListener("pointercancel", end);
       new IntersectionObserver(es => es.forEach(en => { visible = en.isIntersecting; })).observe(drum);
       addEventListener("resize", () => { measure(); render(); });
-      measure(); render(); last = performance.now();
+      measure(); render();
       (function tick(t) {
         if (visible) {
-          if (!dragging && !hover && !reduce && t - last > 2600) go(1);
-          if (!dragging) pos += (target - pos) * .085;
+          if (!dragging) {
+            if (!hover && !reduce && t - last > HOLD && t - t0 > DUR) go(1);
+            const k = Math.min(1, (t - t0) / DUR);
+            pos = from + (to - from) * ease(k);
+          }
           render();
         }
         requestAnimationFrame(tick);
