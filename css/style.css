@@ -667,3 +667,6 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 
 /* galleries of single posters: two per row on desktop, one per row on phones */
 @media (max-width: 600px) { .p-gallery--stack .g-row { grid-template-columns: 1fr; } }
+.roller--plain .roller__w::before { content: none; }
+.mbr { display: none; }
+@media (max-width: 600px) { .mbr { display: inline; } }
