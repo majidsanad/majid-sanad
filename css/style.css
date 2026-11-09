@@ -817,3 +817,10 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 
 /* phones: the posters take the vertical swipe (reels style); the page scrolls from outside them */
 @media (max-width: 600px) { .drum { touch-action: none; } }
+
+/* poster = picture + its own coloured shadow underneath (EXPERIMENT: the .drum__shade rules) */
+.drum__card { overflow: visible; background: none; box-shadow: none; }
+.drum__pic { position: absolute; inset: 0; overflow: hidden; border-radius: 10px; background: #111; box-shadow: 0 0 0 1px rgba(239,239,237,.08); }
+.drum__shade { position: absolute; left: 8%; right: 8%; top: 22%; bottom: -14%; background-size: cover; background-position: center bottom;
+  filter: blur(34px) saturate(1.5); opacity: .7; border-radius: 30%; pointer-events: none; }
+@media (max-width: 600px) { .drum__pic { border-radius: 8px; } .drum__shade { filter: blur(24px) saturate(1.5); bottom: -10%; } }

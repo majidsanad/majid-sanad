@@ -320,16 +320,18 @@
        Front poster full size; the ones behind get smaller and peek out to the sides (vertically on phones). */
     const drum = $(".js-drum");
     if (drum) {
-      const IDS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];   // l01 (Awaidak Al Mashi) left out
+      // l01 (Awaidak Al Mashi) left out; the three black posters (5, 6, 7) and similar colours are kept apart, loop included
+      const IDS = [2, 7, 13, 3, 11, 5, 12, 4, 8, 6, 10, 14, 9];
       const N = IDS.length;
       const stage = $(".drum__stage", drum);
       stage.innerHTML = IDS.map((n, i) => {
         const id = "l" + pad2(n);
-        return `<figure class="drum__card" data-i="${i}"><img src="img/lt/s/${id}.jpg${IV}" srcset="img/lt/s/${id}.jpg${IV} 640w, img/lt/${id}.jpg${IV} 1200w" sizes="(max-width: 600px) 75vw, 40vw" alt="${T.lett}" draggable="false"></figure>`;
+        return `<figure class="drum__card" data-i="${i}"><span class="drum__shade" style="background-image:url(img/lt/s/${id}.jpg${IV})"></span><span class="drum__pic"><img src="img/lt/s/${id}.jpg${IV}" srcset="img/lt/s/${id}.jpg${IV} 640w, img/lt/${id}.jpg${IV} 1200w" sizes="(max-width: 600px) 75vw, 40vw" alt="${T.lett}" draggable="false"></span></figure>`;
       }).join("");
       const cards = $$(".drum__card", stage);
       const vert = matchMedia("(max-width: 600px)");
-      const DUR = 600;
+      const DUR = 780;
+      let dragTo = 0;
       let V, SHOW, SHRINK, H = 0, P = 0, pos = 0, from = 0, to = 0, t0 = -1e9, dragging = false, moved = false, visible = false;
       const measure = () => {
         V = vert.matches;
@@ -339,7 +341,7 @@
         P = V ? H * .065 : Math.max(24, (drum.clientWidth - H) / 2 / SHOW);
       };
       const wrap = d => ((d % N) + N * 1.5) % N - N / 2;
-      const ease = x => 1 - Math.pow(1 - x, 4);
+      const ease = x => 1 - Math.pow(1 - x, 5);
       const render = () => {
         cards.forEach(c => {
           const d = wrap(+c.dataset.i - pos), ad = Math.abs(d);
@@ -371,15 +373,14 @@
       // drag / swipe: along the stack's own direction (phones: sideways swipe also works, so the page can still scroll)
       let sx = 0, sy = 0, sp = 0, pid = null;
       let downT = 0;
-      stage.addEventListener("pointerdown", e => { downT = performance.now(); dragging = true; moved = false; pid = e.pointerId; sx = e.clientX; sy = e.clientY; sp = pos; t0 = -1e9; drum.classList.add("is-drag"); });
+      stage.addEventListener("pointerdown", e => { downT = performance.now(); dragTo = pos; dragging = true; moved = false; pid = e.pointerId; sx = e.clientX; sy = e.clientY; sp = pos; t0 = -1e9; drum.classList.add("is-drag"); });
       addEventListener("pointermove", e => {
         if (!dragging || e.pointerId !== pid) return;
         const dy = e.clientY - sy, dx = e.clientX - sx;
         if (Math.abs(dx) > 5 || Math.abs(dy) > 5) moved = true;
         if (!V && e.pointerType !== "mouse" && Math.abs(dy) > Math.abs(dx) * 1.2 && Math.abs(dx) < 12) { dragging = false; drum.classList.remove("is-drag"); animTo(Math.round(pos)); return; }
         const d = V ? dy : dx;              // phones: up / down like reels; wider screens: sideways
-        pos = sp + Math.max(-1, Math.min(1, -d / (V ? H * .5 : Math.max(P * 1.4, 90))));
-        render();
+        dragTo = sp + Math.max(-1.1, Math.min(1.1, -d / (V ? H * .55 : Math.max(P * 1.5, 100))));
       });
       const end = e => {
         if (!dragging) return;
@@ -397,9 +398,9 @@
       addEventListener("resize", () => { measure(); render(); });
       measure(); render();
       (function tick(t) {
-        if (visible && !dragging && t - t0 < DUR + 50) {
-          pos = from + (to - from) * ease(Math.min(1, (t - t0) / DUR));
-          render();
+        if (visible) {
+          if (dragging) { if (Math.abs(dragTo - pos) > .0005) { pos += (dragTo - pos) * .3; render(); } }
+          else if (t - t0 < DUR + 50) { pos = from + (to - from) * ease(Math.min(1, (t - t0) / DUR)); render(); }
         }
         requestAnimationFrame(tick);
       })(performance.now());
