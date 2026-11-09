@@ -245,13 +245,13 @@
         await wait(1800);
         for (;;) {
           const w = words[wi];
-          for (let n = w.length; n >= 0; n--) { t.textContent = w.slice(0, n); await wait(45); }
+          for (let n = w.length; n >= 0; n--) { t.textContent = w.slice(0, n); await wait(35); }
           roller.classList.add("is-empty");
           await wait(260);
           wi = (wi + 1) % words.length;
           const nw = words[wi];
           roller.classList.remove("is-empty");
-          for (let n = 1; n <= nw.length; n++) { t.textContent = nw.slice(0, n); await wait(85 + Math.random() * 50); }
+          for (let n = 1; n <= nw.length; n++) { t.textContent = nw.slice(0, n); await wait(60 + Math.random() * 30); }
           await wait(2000);
         }
       };
