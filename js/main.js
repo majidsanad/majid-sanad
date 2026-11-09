@@ -326,11 +326,11 @@
       const stage = $(".drum__stage", drum);
       stage.innerHTML = IDS.map((n, i) => {
         const id = "l" + pad2(n);
-        return `<figure class="drum__card" data-i="${i}"><span class="drum__shade" style="background-image:url(img/lt/s/${id}.jpg${IV})"></span><span class="drum__pic"><img src="img/lt/s/${id}.jpg${IV}" srcset="img/lt/s/${id}.jpg${IV} 640w, img/lt/${id}.jpg${IV} 1200w" sizes="(max-width: 600px) 75vw, 40vw" alt="${T.lett}" draggable="false"></span></figure>`;
+        return `<figure class="drum__card" data-i="${i}"><span class="drum__pic"><img src="img/lt/s/${id}.jpg${IV}" srcset="img/lt/s/${id}.jpg${IV} 640w, img/lt/${id}.jpg${IV} 1200w" sizes="(max-width: 600px) 75vw, 40vw" alt="${T.lett}" draggable="false"></span></figure>`;
       }).join("");
       const cards = $$(".drum__card", stage);
       const vert = matchMedia("(max-width: 600px)");
-      const DUR = 780;
+      const DUR = 420;
       let dragTo = 0;
       let V, SHOW, SHRINK, H = 0, P = 0, pos = 0, from = 0, to = 0, t0 = -1e9, dragging = false, moved = false, visible = false;
       const measure = () => {
@@ -341,7 +341,7 @@
         P = V ? H * .065 : Math.max(24, (drum.clientWidth - H) / 2 / SHOW);
       };
       const wrap = d => ((d % N) + N * 1.5) % N - N / 2;
-      const ease = x => 1 - Math.pow(1 - x, 5);
+      const ease = x => 1 - Math.pow(1 - x, 3);
       const render = () => {
         cards.forEach(c => {
           const d = wrap(+c.dataset.i - pos), ad = Math.abs(d);
@@ -380,7 +380,8 @@
         if (Math.abs(dx) > 5 || Math.abs(dy) > 5) moved = true;
         if (!V && e.pointerType !== "mouse" && Math.abs(dy) > Math.abs(dx) * 1.2 && Math.abs(dx) < 12) { dragging = false; drum.classList.remove("is-drag"); animTo(Math.round(pos)); return; }
         const d = V ? dy : dx;              // phones: up / down like reels; wider screens: sideways
-        dragTo = sp + Math.max(-1.1, Math.min(1.1, -d / (V ? H * .55 : Math.max(P * 1.5, 100))));
+        pos = dragTo = sp + Math.max(-1.1, Math.min(1.1, -d / (V ? H * .4 : Math.max(P * 1.2, 80))));
+        render();
       });
       const end = e => {
         if (!dragging) return;
@@ -391,7 +392,7 @@
         }
         // like reels: a swipe moves exactly one poster, whichever way it went; a quick flick is enough
         const moveBy = pos - sp, fast = Math.abs(moveBy) / Math.max(1, performance.now() - downT) * 1000;
-        animTo(Math.abs(moveBy) > .12 || fast > 1.2 ? Math.round(sp) + Math.sign(moveBy) : Math.round(sp));
+        animTo(Math.abs(moveBy) > .08 || fast > .8 ? Math.round(sp) + Math.sign(moveBy) : Math.round(sp));
       };
       addEventListener("pointerup", end); addEventListener("pointercancel", end);
       new IntersectionObserver(es => es.forEach(en => { visible = en.isIntersecting; })).observe(drum);
@@ -399,8 +400,7 @@
       measure(); render();
       (function tick(t) {
         if (visible) {
-          if (dragging) { if (Math.abs(dragTo - pos) > .0005) { pos += (dragTo - pos) * .3; render(); } }
-          else if (t - t0 < DUR + 50) { pos = from + (to - from) * ease(Math.min(1, (t - t0) / DUR)); render(); }
+          if (t - t0 < DUR + 50) { pos = from + (to - from) * ease(Math.min(1, (t - t0) / DUR)); render(); }
         }
         requestAnimationFrame(tick);
       })(performance.now());
