@@ -331,7 +331,10 @@
       const SHRINK = .1;         // each level back is 10% smaller
       const HOLD = 1300, DUR = 650;
       let pos = 0, from = 0, to = 0, t0 = 0, H = 0, P = 0, dragging = false, hover = false, visible = false, last = 0;
-      const measure = () => { H = cards[0].offsetHeight; P = H * .065; };
+      // phones stack vertically, wider screens horizontally
+      const vert = matchMedia("(max-width: 600px)");
+      let V = vert.matches;
+      const measure = () => { V = vert.matches; H = V ? cards[0].offsetHeight : cards[0].offsetWidth; P = H * (V ? .065 : .08); };
       const wrap = d => ((d % N) + N * 1.5) % N - N / 2;
       const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
       const render = () => {
@@ -340,8 +343,9 @@
           if (ad > SHOW + .6) { c.style.visibility = "hidden"; return; }
           c.style.visibility = "";
           const sc = 1 - SHRINK * ad;
-          const y = Math.sign(d) * (H / 2 * (1 - sc) + P * ad);
-          c.style.transform = `translate3d(-50%, calc(-50% + ${y.toFixed(1)}px), 0) scale(${sc.toFixed(4)})`;
+          const o = (Math.sign(d) * (H / 2 * (1 - sc) + P * ad)).toFixed(1);
+          c.style.transform = V ? `translate3d(-50%, calc(-50% + ${o}px), 0) scale(${sc.toFixed(4)})`
+                                : `translate3d(calc(-50% + ${o}px), -50%, 0) scale(${sc.toFixed(4)})`;
           c.style.zIndex = 100 - Math.round(ad * 10);
           c.style.opacity = ad > SHOW ? (1 - (ad - SHOW) / .6).toFixed(3) : 1;
         });
@@ -356,7 +360,7 @@
         if (!dragging || e.pointerId !== pid) return;
         const dy = e.clientY - sy, dx = e.clientX - sx;
         if (e.pointerType !== "mouse" && Math.abs(dy) > Math.abs(dx) * 1.2 && Math.abs(dx) < 12) { dragging = false; drum.classList.remove("is-drag"); return; }
-        pos = sp - (e.pointerType === "mouse" ? dy : dx) / (H * .5);
+        pos = sp - (V && e.pointerType === "mouse" ? dy : dx) / (H * .5);
       });
       const end = () => {
         if (!dragging) return;

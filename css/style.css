@@ -778,15 +778,17 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 .nav.on-red .nav__cta { background: var(--ink); color: var(--paper); }
 .nav.on-red .nav__pill { background: rgba(11,11,11,.1); }
 
-/* lettering: stacked carousel on black */
-.lettering--drum { height: auto; padding: clamp(80px, 10vw, 160px) 0; overflow: hidden; }
-.drum { position: relative; height: calc(min(64vh, 620px) * 1.75); user-select: none; -webkit-user-select: none; touch-action: pan-y; cursor: grab; }
+/* lettering: stacked carousel on black. Horizontal on laptop / tablet, vertical on phones */
+.lettering--drum { height: auto; padding: clamp(10px, 2vw, 30px) 0 clamp(70px, 8vw, 120px); overflow: hidden; }
+.lettering--drum .lettering__head { margin-bottom: clamp(24px, 3vw, 44px); }
+.lettering--drum .lettering__title { font-size: clamp(56px, 10vw, 180px); margin: 0; }
+.drum { --ch: min(62vh, 600px, 66vw); position: relative; height: calc(var(--ch) + 20px); user-select: none; -webkit-user-select: none; touch-action: pan-y; cursor: grab; }
 .drum.is-drag { cursor: grabbing; }
 .drum__stage { position: absolute; inset: 0; }
-.drum__card { position: absolute; left: 50%; top: 50%; margin: 0; height: min(64vh, 620px); aspect-ratio: 4 / 5; overflow: hidden; background: #111; transform-origin: 50% 50%; will-change: transform; }
+.drum__card { position: absolute; left: 50%; top: 50%; margin: 0; height: var(--ch); aspect-ratio: 4 / 5; overflow: hidden; background: #111; transform-origin: 50% 50%; will-change: transform;
+  box-shadow: 0 0 0 1px rgba(239,239,237,.08), 0 10px 40px rgba(0,0,0,.45); }
 .drum__card img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
-@media (max-width: 860px) {
+@media (max-width: 600px) {
   .drum { height: calc(74vw * 1.25 * 1.75); }
   .drum__card { height: auto; width: 74vw; }
 }
-.drum__card { box-shadow: 0 0 0 1px rgba(239,239,237,.08), 0 -10px 30px rgba(0,0,0,.35), 0 10px 30px rgba(0,0,0,.35); }
