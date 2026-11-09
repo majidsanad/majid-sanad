@@ -739,5 +739,3 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 .lettering__row.js-drag { touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
 .lettering__row.js-drag.is-drag { cursor: grabbing; }
 .lettering__row.js-drag img { pointer-events: none; -webkit-user-drag: none; }
-/* marks: big moving title like lettering */
-.marks .lettering__head { padding: 0; }
