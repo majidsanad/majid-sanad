@@ -70,7 +70,7 @@ window.PORTFOLIO = {
     {
       slug: "sports-for-all", no: "04.2", cat: "Campaign", title: "Awaidak Al Mashi", sub: "Walking is your habit",
       client: "Sports for All", bg: "#0A0A0A", fg: "#EFEFEF",
-      cover: "k195", hover: "k004", gallery: ["p60",["k003","k008","k013","k017"],"p61"],
+      cover: "k195", hover: "k004", stack: true, gallery: [["k014","k015"],["k016","k017"],["k010","k006"],["k012","k013"],["k018","k003"],["k004","k005"],["k011","k007"],["k008","k009"]],
       about: [
         ["Sports for All", "Sports for All is an initiative by the Saudi Ministry of Sport, established to promote healthier lifestyles and encourage community engagement through accessible physical activities across all age groups and abilities."],
         ["Awaidak Al Mashi", "A seasonal campaign designed to encourage people to stay active during the summer through a community walking challenge. Participants track their daily steps and convert their movement into redeemable rewards — turning everyday walking into a rewarding habit."],

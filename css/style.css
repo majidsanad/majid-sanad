@@ -664,3 +664,6 @@ html[lang="ar"] .consult__title, html[lang="ar"] .marks__title { font-variation-
 html[lang="ar"] .nav__logo, html[lang="ar"] [lang="en"] { font-family: "Anybody", "Montserrat", sans-serif; }
 html[lang="ar"] .nav__logo { font-variation-settings: "wdth" 100, "wght" 700; letter-spacing: -.01em !important; }
 html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { font-family: "Montserrat", sans-serif; letter-spacing: .06em !important; }
+
+/* galleries of single posters: two per row on desktop, one per row on phones */
+@media (max-width: 600px) { .p-gallery--stack .g-row { grid-template-columns: 1fr; } }

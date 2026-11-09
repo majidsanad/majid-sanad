@@ -395,7 +395,7 @@
 
     const fig = (id, sz = "100vw") => `<figure>${pic(id, sz, p.title + " — " + p.sub, 'loading="lazy"')}</figure>`;
     const gallery = p.gallery.map(item => Array.isArray(item)
-      ? `<div class="g-row" style="--n:${item.length}">${item.map(id => fig(id, `${Math.round(100 / item.length)}vw`)).join("")}</div>`
+      ? `<div class="g-row" style="--n:${item.length}">${item.map(id => fig(id, p.stack ? "(max-width: 600px) 100vw, 50vw" : `${Math.round(100 / item.length)}vw`)).join("")}</div>`
       : fig(item).replace("<figure>", '<figure class="g-wide">')).join("");
 
     $("#project").innerHTML = `
@@ -414,7 +414,7 @@
         <h2><span class="line"><span>${T.about[0]}</span></span><span class="line"><span>${T.about[1]}</span></span></h2>
         <div class="p-about__grid">${p.about.map(a => `<article class="reveal"><h3>${a[0]}</h3><p>${a[1]}</p></article>`).join("")}</div>
       </section>
-      <section class="p-gallery">${gallery}</section>
+      <section class="p-gallery${p.stack ? " p-gallery--stack" : ""}">${gallery}</section>
       <section class="p-cta">
         <p>${T.similar}</p>
         <a class="contact__cta magnetic" href="${D.whatsapp}" target="_blank" rel="noopener" data-cursor="${T.hi}"><span>${T.talk}</span><i><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M8 6h10v10" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></i></a>
