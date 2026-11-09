@@ -479,20 +479,30 @@
 
   /* ---------- nav colour from the section under it ---------- */
   const nav = $(".nav");
-  let themed = null;
+  let themed = null, navUnder;
   const isLight = rgb => { const m = rgb.match(/\d+/g); return m ? (m[0] * .299 + m[1] * .587 + m[2] * .114) > 140 : false; };
   scrollers.push(() => {
     if (!nav) return;
-    let light = false;
+    let light = false, under = null;
     themed = themed || $$("[data-theme], .p-hero, .p-about, .p-cover, .p-gallery, .p-next");
     for (const s of themed) {
       const r = s.getBoundingClientRect();
       if (r.top <= 30 && r.bottom > 30) {
         light = s.dataset.theme ? s.dataset.theme !== "black" : s.matches(".p-about, .p-next") || (s.matches(".p-hero") && isLight(getComputedStyle(s).backgroundColor));
+        under = s;
         break;
       }
     }
     nav.classList.toggle("on-light", light);
+    // blurred bar behind the nav, tinted with the colour of the section underneath
+    nav.classList.toggle("is-scrolled", scrollY > 40);
+    if (under !== navUnder) {
+      navUnder = under;
+      let bg = under ? getComputedStyle(under).backgroundColor : "";
+      if (!bg || bg === "transparent" || /,\s*0\)$/.test(bg)) bg = light ? "rgb(239, 239, 236)" : "rgb(10, 10, 10)";
+      const m = bg.match(/\d+(\.\d+)?/g);
+      nav.style.setProperty("--nav-bg", `rgba(${m[0]}, ${m[1]}, ${m[2]}, .72)`);
+    }
   });
 
   /* ---------- resize ---------- */
