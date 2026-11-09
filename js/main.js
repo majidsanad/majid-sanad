@@ -498,10 +498,12 @@
     nav.classList.toggle("is-scrolled", scrollY > 40);
     if (under !== navUnder) {
       navUnder = under;
-      let bg = under ? getComputedStyle(under).backgroundColor : "";
-      if (!bg || bg === "transparent" || /,\s*0\)$/.test(bg)) bg = light ? "rgb(239, 239, 236)" : "rgb(10, 10, 10)";
+      // a section's theme wins over its computed background (the hero is a light card on a dark section)
+      const THEME = { paper: "rgb(239, 239, 237)", black: "rgb(11, 11, 11)", red: "rgb(239, 43, 60)" };
+      let bg = under && under.dataset.theme ? THEME[under.dataset.theme] : under ? getComputedStyle(under).backgroundColor : "";
+      if (!bg || bg === "transparent" || /,\s*0\)$/.test(bg)) bg = light ? THEME.paper : THEME.black;
       const m = bg.match(/\d+(\.\d+)?/g);
-      nav.style.setProperty("--nav-bg", `rgba(${m[0]}, ${m[1]}, ${m[2]}, .72)`);
+      nav.style.setProperty("--nav-bg", `${m[0]}, ${m[1]}, ${m[2]}`);
     }
   });
 
