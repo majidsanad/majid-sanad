@@ -712,3 +712,6 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 
 /* phone logo rows use <img> */
 .mk img { height: 100%; width: auto; display: block; }
+
+/* logo rows are driven from JS (pixel distances) */
+.marks__track { animation: none !important; }

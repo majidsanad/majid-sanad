@@ -331,8 +331,31 @@
           [svgs.slice(0, 14), svgs.slice(14)].forEach((set, r) => {
             const html = set.filter(Boolean).map(cell).join("");
             tracks[r].innerHTML = html + html;
-            $$("[aria-hidden]", tracks[r]);
           });
+          // move each row by an exact pixel distance, started only once the logos have a size
+          // (Safari fixes a % distance at start time, when the row was still empty)
+          const anims = [];
+          const run = () => {
+            anims.forEach(a => a.cancel()); anims.length = 0;
+            tracks.forEach((t, r) => {
+              const half = t.scrollWidth / 2;
+              if (!half) return;
+              const a = t.animate(
+                [{ transform: "translate3d(0,0,0)" }, { transform: `translate3d(${-half}px,0,0)` }],
+                { duration: half / 45 * 1000, iterations: Infinity, easing: "linear", direction: r ? "reverse" : "normal" });
+              anims.push(a);
+            });
+          };
+          const imgs = $$("img", tracks[0].parentNode.parentNode);
+          Promise.all(imgs.map(i => i.decode ? i.decode().catch(() => {}) : Promise.resolve()))
+            .then(() => requestAnimationFrame(run));
+          let lw = innerWidth, mt;
+          addEventListener("resize", () => { if (innerWidth === lw) return; lw = innerWidth; clearTimeout(mt); mt = setTimeout(run, 200); });
+          if (fine) {
+            const rows = $(".marks__rows");
+            rows.addEventListener("pointerenter", () => anims.forEach(a => a.pause()));
+            rows.addEventListener("pointerleave", () => anims.forEach(a => a.play()));
+          }
         });
     }
 
