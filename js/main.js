@@ -561,7 +561,6 @@
   if (page === "about") {
     $(".js-worked").innerHTML = D.workedAt.map(w =>
       `<li class="reveal"><span class="a">${w[0]}</span><span class="r">${w[1]}</span><span class="d">${w[2]}</span></li>`).join("");
-    $(".js-clients").innerHTML = D.clients.map(c => `<li class="reveal">${c}</li>`).join("");
     $$(".p-cta .magnetic").forEach(magnetic);
     const ph = $(".ab-photo");
     scrollers.push(() => {
@@ -591,6 +590,7 @@
       }
     }
     nav.classList.toggle("on-light", light);
+    nav.classList.toggle("on-red", !!(under && under.dataset.theme === "red"));
     // blurred bar behind the nav, tinted with the colour of the section underneath
     nav.classList.toggle("is-scrolled", scrollY > 40);
     if (under !== navUnder) {
