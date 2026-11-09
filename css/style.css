@@ -8,6 +8,7 @@
   --paper: #EFEFED;
   --mute: #8a8a8a;
   --pad: clamp(18px, 3.2vw, 56px);
+  --sec: clamp(72px, 9vw, 140px);
   --ease: cubic-bezier(.7, 0, .2, 1);
   --ease-out: cubic-bezier(.16, 1, .3, 1);
   --display: "Anybody", "Arial Narrow", sans-serif;
@@ -778,17 +779,38 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 .nav.on-red .nav__cta { background: var(--ink); color: var(--paper); }
 .nav.on-red .nav__pill { background: rgba(11,11,11,.1); }
 
-/* lettering: stacked carousel on black. Horizontal on laptop / tablet, vertical on phones */
-.lettering--drum { height: auto; padding: clamp(10px, 2vw, 30px) 0 clamp(70px, 8vw, 120px); overflow: hidden; }
-.lettering--drum .lettering__head { margin-bottom: clamp(24px, 3vw, 44px); }
-.lettering--drum .lettering__title { font-size: clamp(56px, 10vw, 180px); margin: 0; }
-.drum { --ch: min(62vh, 600px, 66vw); position: relative; height: calc(var(--ch) + 20px); user-select: none; -webkit-user-select: none; touch-action: pan-y; cursor: grab; }
+/* lettering: stacked carousel on black. Horizontal edge to edge on laptop / tablet, vertical on phones */
+.lettering--drum { height: auto; padding: 0 0 var(--sec); overflow: hidden; }
+.lettering--drum .lettering__head { padding: 0 var(--pad); margin-bottom: clamp(24px, 3vw, 44px); }
+.lettering--drum .lettering__title { font-size: clamp(48px, 7vw, 120px); margin: 0; white-space: nowrap; }
+.lettering--drum .lettering__title .flex-word { color: var(--red); }
+.drum { --ch: min(64vh, 620px, 62vw); position: relative; height: var(--ch); user-select: none; -webkit-user-select: none; touch-action: pan-y; cursor: grab; outline: none; }
 .drum.is-drag { cursor: grabbing; }
 .drum__stage { position: absolute; inset: 0; }
-.drum__card { position: absolute; left: 50%; top: 50%; margin: 0; height: var(--ch); aspect-ratio: 4 / 5; overflow: hidden; background: #111; transform-origin: 50% 50%; will-change: transform;
+.drum__card { position: absolute; left: 50%; top: 50%; margin: 0; height: var(--ch); aspect-ratio: 4 / 5; overflow: hidden; background: #111; transform-origin: 50% 50%; will-change: transform; cursor: pointer;
   box-shadow: 0 0 0 1px rgba(239,239,237,.08), 0 10px 40px rgba(0,0,0,.45); }
+.drum.is-drag .drum__card { cursor: grabbing; }
 .drum__card img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
+.drum__ui { display: flex; align-items: center; justify-content: center; gap: 22px; margin-top: clamp(24px, 3vw, 40px); padding: 0 var(--pad); font-size: 12px; font-weight: 600; letter-spacing: .08em; color: rgba(239,239,237,.55); font-variant-numeric: tabular-nums; }
+.drum__count b { color: var(--paper); font-weight: 600; }
+.drum__btn { width: 52px; height: 52px; border-radius: 50%; border: 1px solid rgba(239,239,237,.25); display: grid; place-items: center; color: var(--paper); transition: background .3s, border-color .3s; }
+.drum__btn svg { width: 18px; height: 18px; }
+.drum__btn:hover { background: var(--red); border-color: var(--red); }
 @media (max-width: 600px) {
-  .drum { height: calc(74vw * 1.25 * 1.75); }
+  .drum { --ch: auto; height: calc(74vw * 1.25 * 1.69); }
   .drum__card { height: auto; width: 74vw; }
+  .drum__ui { justify-content: space-between; }
 }
+
+/* ===== one rhythm for section spacing =====
+   every section breathes by --sec; when two sections share a background the second one drops its top
+   padding, so the gap between them is one --sec, not two */
+.statement { padding-top: var(--sec); padding-bottom: var(--sec); }
+.marks { padding-top: var(--sec); padding-bottom: var(--sec); }
+.lettering--drum { padding-top: 0; padding-bottom: var(--sec); }
+.lettering--drum + .worked { padding-top: 0; }
+.worked { padding-bottom: var(--sec); }
+.consult { padding-top: var(--sec); padding-bottom: var(--sec); }
+.contact { padding-top: var(--sec); }
+/* lettering head: same pattern as Marks & Logotypes */
+.lettering--drum .lettering__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: clamp(28px, 4vw, 56px); }

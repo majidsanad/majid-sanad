@@ -316,68 +316,88 @@
       hbar.style.setProperty("--hp", p);
     });
 
-    /* lettering: stacked carousel. The front poster is full size; the ones behind get smaller and
-       peek out as thin strips above and below. The next one slides up from behind to the front. */
+    /* lettering: stacked carousel, moved only by the visitor (drag, arrows, keys, trackpad, click a side poster).
+       Front poster full size; the ones behind get smaller and peek out to the sides (vertically on phones). */
     const drum = $(".js-drum");
     if (drum) {
       const N = 14;
-      const stage = $(".drum__stage", drum);
+      const stage = $(".drum__stage", drum), counter = $(".js-drum-n");
       stage.innerHTML = Array.from({ length: N }, (_, i) => {
         const id = "l" + pad2(i + 1);
-        return `<figure class="drum__card"><img src="img/lt/s/${id}.jpg${IV}" srcset="img/lt/s/${id}.jpg${IV} 640w, img/lt/${id}.jpg${IV} 1200w" sizes="(max-width: 860px) 70vw, 30vw" alt="${T.lett}" draggable="false"></figure>`;
+        return `<figure class="drum__card" data-i="${i}"><img src="img/lt/s/${id}.jpg${IV}" srcset="img/lt/s/${id}.jpg${IV} 640w, img/lt/${id}.jpg${IV} 1200w" sizes="(max-width: 600px) 75vw, 40vw" alt="${T.lett}" draggable="false"></figure>`;
       }).join("");
       const cards = $$(".drum__card", stage);
-      const SHOW = 3;            // posters visible above and below the front one
-      const SHRINK = .1;         // each level back is 10% smaller
-      const HOLD = 1300, DUR = 650;
-      let pos = 0, from = 0, to = 0, t0 = 0, H = 0, P = 0, dragging = false, hover = false, visible = false, last = 0;
-      // phones stack vertically, wider screens horizontally
       const vert = matchMedia("(max-width: 600px)");
-      let V = vert.matches;
-      const measure = () => { V = vert.matches; H = V ? cards[0].offsetHeight : cards[0].offsetWidth; P = H * (V ? .065 : .08); };
+      const DUR = 600;
+      let V, SHOW, SHRINK, H = 0, P = 0, pos = 0, from = 0, to = 0, t0 = -1e9, dragging = false, moved = false, visible = false;
+      const measure = () => {
+        V = vert.matches;
+        SHOW = V ? 3 : 5; SHRINK = V ? .1 : .075;
+        H = V ? cards[0].offsetHeight : cards[0].offsetWidth;
+        // wide screens: the outermost posters reach the screen edges
+        P = V ? H * .065 : Math.max(24, (drum.clientWidth - H) / 2 / SHOW);
+      };
       const wrap = d => ((d % N) + N * 1.5) % N - N / 2;
-      const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+      const ease = x => 1 - Math.pow(1 - x, 4);
       const render = () => {
-        cards.forEach((c, i) => {
-          const d = wrap(i - pos), ad = Math.abs(d);
-          if (ad > SHOW + .6) { c.style.visibility = "hidden"; return; }
+        cards.forEach(c => {
+          const d = wrap(+c.dataset.i - pos), ad = Math.abs(d);
+          if (ad > SHOW + .7) { c.style.visibility = "hidden"; return; }
           c.style.visibility = "";
           const sc = 1 - SHRINK * ad;
           const o = (Math.sign(d) * (H / 2 * (1 - sc) + P * ad)).toFixed(1);
           c.style.transform = V ? `translate3d(-50%, calc(-50% + ${o}px), 0) scale(${sc.toFixed(4)})`
                                 : `translate3d(calc(-50% + ${o}px), -50%, 0) scale(${sc.toFixed(4)})`;
           c.style.zIndex = 100 - Math.round(ad * 10);
-          c.style.opacity = ad > SHOW ? (1 - (ad - SHOW) / .6).toFixed(3) : 1;
+          c.style.opacity = ad > SHOW ? Math.max(0, 1 - (ad - SHOW) / .7).toFixed(3) : 1;
         });
+        counter.textContent = pad2(((Math.round(pos) % N) + N) % N + 1);
       };
-      const go = k => { from = pos; to = Math.round(to) + k; t0 = performance.now(); last = t0 + DUR; };
-      drum.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") hover = true; });
-      drum.addEventListener("pointerleave", () => { hover = false; });
-      // drag: up/down with a mouse, sideways with a finger (so the page still scrolls)
+      const animTo = t => { from = pos; to = t; t0 = performance.now(); };
+      const go = k => animTo(Math.round(t0 + DUR > performance.now() ? to : pos) + k);
+      $(".js-drum-prev").addEventListener("click", () => go(-1));
+      $(".js-drum-next").addEventListener("click", () => go(1));
+      drum.addEventListener("keydown", e => {
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); go(1); }
+        if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); go(-1); }
+      });
+      // trackpad: sideways swipe moves it on wide screens; vertical page scroll is left alone
+      let wAcc = 0, wT = 0;
+      drum.addEventListener("wheel", e => {
+        if (V || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+        e.preventDefault();
+        wAcc += e.deltaX;
+        const now = performance.now();
+        if (Math.abs(wAcc) > 60 && now - wT > 350) { go(Math.sign(wAcc)); wAcc = 0; wT = now; }
+      }, { passive: false });
+      // drag / swipe: along the stack's own direction (phones: sideways swipe also works, so the page can still scroll)
       let sx = 0, sy = 0, sp = 0, pid = null;
-      stage.addEventListener("pointerdown", e => { dragging = true; pid = e.pointerId; sx = e.clientX; sy = e.clientY; sp = pos; drum.classList.add("is-drag"); });
+      stage.addEventListener("pointerdown", e => { dragging = true; moved = false; pid = e.pointerId; sx = e.clientX; sy = e.clientY; sp = pos; t0 = -1e9; drum.classList.add("is-drag"); });
       addEventListener("pointermove", e => {
         if (!dragging || e.pointerId !== pid) return;
         const dy = e.clientY - sy, dx = e.clientX - sx;
-        if (e.pointerType !== "mouse" && Math.abs(dy) > Math.abs(dx) * 1.2 && Math.abs(dx) < 12) { dragging = false; drum.classList.remove("is-drag"); return; }
-        pos = sp - (V && e.pointerType === "mouse" ? dy : dx) / (H * .5);
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) moved = true;
+        if (e.pointerType !== "mouse" && Math.abs(dy) > Math.abs(dx) * 1.2 && Math.abs(dx) < 12 && !(V && false)) { dragging = false; drum.classList.remove("is-drag"); animTo(Math.round(pos)); return; }
+        const d = V && e.pointerType === "mouse" ? dy : dx;
+        pos = sp - d / (V ? H * .5 : Math.max(P * 1.4, 90));
+        render();
       });
-      const end = () => {
+      const end = e => {
         if (!dragging) return;
         dragging = false; drum.classList.remove("is-drag");
-        from = pos; to = Math.round(pos); t0 = performance.now(); last = t0 + DUR;
+        if (!moved) {                       // a click on a side poster brings it to the front
+          const c = e.target.closest && e.target.closest(".drum__card");
+          if (c) { const d = wrap(+c.dataset.i - pos); animTo(Math.round(pos + d)); return; }
+        }
+        animTo(Math.round(pos));
       };
       addEventListener("pointerup", end); addEventListener("pointercancel", end);
       new IntersectionObserver(es => es.forEach(en => { visible = en.isIntersecting; })).observe(drum);
       addEventListener("resize", () => { measure(); render(); });
       measure(); render();
       (function tick(t) {
-        if (visible) {
-          if (!dragging) {
-            if (!hover && !reduce && t - last > HOLD && t - t0 > DUR) go(1);
-            const k = Math.min(1, (t - t0) / DUR);
-            pos = from + (to - from) * ease(k);
-          }
+        if (visible && !dragging && t - t0 < DUR + 50) {
+          pos = from + (to - from) * ease(Math.min(1, (t - t0) / DUR));
           render();
         }
         requestAnimationFrame(tick);
