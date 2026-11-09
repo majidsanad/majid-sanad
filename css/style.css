@@ -725,3 +725,12 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 }
 .roller.is-empty .roller__caret { margin-left: 0; }
 @keyframes caret { 50% { opacity: 0; } }
+
+/* combined images split into single posters on phones */
+.p-gallery .g-mob { display: none; }
+@media (max-width: 600px) {
+  .p-gallery .g-desk { display: none; }
+  .p-gallery .g-mob { display: grid; gap: clamp(10px, 1.4vw, 22px); }
+  .p-gallery--stack .g-row figure { aspect-ratio: auto; }
+  .p-gallery--stack .g-row img { height: auto; }
+}

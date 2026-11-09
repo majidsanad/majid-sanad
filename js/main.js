@@ -453,7 +453,10 @@
     const fig = (id, sz = "100vw") => `<figure>${pic(id, sz, p.title + " — " + p.sub, 'loading="lazy"')}</figure>`;
     const gallery = p.gallery.map(item => Array.isArray(item)
       ? `<div class="g-row" style="--n:${item.length}">${item.map(id => fig(id, p.stack ? "(max-width: 600px) 100vw, 50vw" : `${Math.round(100 / item.length)}vw`)).join("")}</div>`
-      : fig(item).replace("<figure>", '<figure class="g-wide">')).join("");
+      : p.mob && p.mob[item]
+        // phones: a combined image is replaced by its single posters, one per row
+        ? fig(item).replace("<figure>", '<figure class="g-wide g-desk">') + `<div class="g-mob">${p.mob[item].map(id => fig(id, "100vw")).join("")}</div>`
+        : fig(item).replace("<figure>", '<figure class="g-wide">')).join("");
 
     $("#project").innerHTML = `
       <section class="p-hero">
