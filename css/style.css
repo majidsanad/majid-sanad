@@ -690,3 +690,11 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 .consult__btn.cta-fx:hover { background: var(--ink); color: var(--ink); }
 .contact__cta.cta-fx { --fx-bg: var(--paper); }
 .contact__cta.cta-fx:hover { background: var(--red); color: var(--ink); }
+
+/* contact button: compact pill instead of the big circle */
+.contact__cta {
+  width: auto; aspect-ratio: auto; border-radius: 99px; flex-direction: row; gap: 10px;
+  padding: 15px 26px; font-family: var(--text); font-variation-settings: normal; font-weight: 600;
+  text-transform: none; font-size: 15px; letter-spacing: 0; white-space: nowrap; align-self: end; justify-self: start;
+}
+.contact__cta i { font-size: 1em; display: inline-flex; }
