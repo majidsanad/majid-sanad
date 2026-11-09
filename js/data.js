@@ -50,7 +50,7 @@ window.PORTFOLIO = {
     {
       slug: "frame-house", no: "02.5", cat: "Branding", title: "Frame House", sub: "Café Identity",
       client: "Frame House — Kuwait City", bg: "#EFEFEF", fg: "#0A0A0A",
-      cover: "k097", hover: "k105", gallery: ["p45",["k105","k130"],"p46","p47","k096","p48","p49"],
+      cover: "k097", hover: "k105", gallery: ["p45",["k105","k130"],"p46","p47","p48","p49"],
       about: [
         ["About Frame House", "Frame House is a premium café based in Kuwait City, designed to offer an elevated experience that feels intimate and familiar. The concept was built around creating a sense of belonging, where the space feels more like home than a traditional commercial coffee destination."],
         ["Challenges", "The main challenge was creating an identity refined enough to match the café’s premium positioning while remaining visually understated. Since the interior design carried much of the atmosphere, the branding needed to support the experience without competing for attention."],
