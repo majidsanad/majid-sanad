@@ -221,6 +221,20 @@
      HOME
      ========================================================= */
   let hTrack, hSection, trackMax = 0;
+  // chapter cards (Branding / Campaigns / Editorials): the big word stays on one line and fills the card;
+  // all chapters share the size of the longest word so they match
+  function fitChapters() {
+    const words = $$(".hchap .flex-word");
+    if (!words.length) return;
+    let size = Infinity;
+    words.forEach(w => {
+      w.style.fontSize = "100px";
+      const box = w.parentElement, cs = getComputedStyle(box);
+      const inner = box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      size = Math.min(size, inner / w.scrollWidth * 100 * .98);
+    });
+    words.forEach(w => (w.style.fontSize = size.toFixed(1) + "px"));
+  }
   function sizeH() {
     if (!hTrack) return;
     trackMax = Math.max(0, hTrack.scrollWidth - vw);
@@ -690,6 +704,7 @@
     vw = innerWidth; vh = innerHeight;
     if (page === "home") {
       fit($(".contact__title"), .62, vh * .13);
+      fitChapters();
       sizeH();
     }
   }

@@ -822,3 +822,7 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 .drum__pic { position: absolute; inset: 0; overflow: hidden; border-radius: 6px; background: #111; box-shadow: 0 0 0 1px rgba(239,239,237,.08), 0 10px 40px rgba(0,0,0,.45); }
 /* lettering title: same as Worked at */
 .lettering--drum .lettering__head { display: block; }
+
+/* chapter cards: the big word on one line (size set by fitChapters in main.js) */
+.hchap .flex-word { white-space: nowrap; word-break: normal; display: inline-block; align-self: flex-start; }
+html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
