@@ -335,7 +335,7 @@
     const drum = $(".js-drum");
     if (drum) {
       // l01 (Awaidak Al Mashi) left out; the three black posters (5, 6, 7) and similar colours are kept apart, loop included
-      const IDS = [2, 7, 13, 3, 11, 5, 12, 4, 8, 6, 10, 14, 9];
+      const IDS = [2, 7, 13, 15, 11, 5, 12, 4, 8, 6, 10, 14, 9];
       const N = IDS.length;
       const stage = $(".drum__stage", drum);
       stage.innerHTML = IDS.map((n, i) => {
