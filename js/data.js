@@ -141,6 +141,6 @@ window.PORTFOLIO = {
     "Aramco Digital", "Ministry of Defense", "Ehsan", "Tahakom", "Sports for All", "Riyadh University of Arts",
     "Madinah Region Municipality", "Alinma Bank", "Cyberani", "Retal", "Environment Fund", "Awqaf",
     "Bayina", "Ithra", "National Cybersecurity Authority", "MTC", "Prodigy", "On Off", "Alkuraimi Bank",
-    "Breehant", "Top Speed", "R Talks", "YKB", "Mobile Money", "YZL", "CAC Bank"
+    "Breehant", "Top Speed", "R Talks", "YKB", "Mobile Money", "CAC Bank"
   ]
 };

@@ -423,7 +423,7 @@
     /* marks: real vector logos, two slow rows */
     const tracks = $$(".js-mtrack");
     if (tracks.length) {
-      Promise.all(Array.from({ length: 28 }, (_, i) => fetch(`img/logos/logo-${pad2(i + 1)}.svg`).then(r => r.text()).catch(() => "")))
+      Promise.all(Array.from({ length: 28 }, (_, i) => i + 1).filter(n => n !== 9 /* YZL removed */).map(n => fetch(`img/logos/logo-${pad2(n)}.svg`).then(r => r.text()).catch(() => "")))
         .then(svgs => {
           // phones: logos as images (drawn once) instead of inline vectors that iOS re-rasterises while moving
           const asImg = svg => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
