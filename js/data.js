@@ -40,7 +40,7 @@ window.PORTFOLIO = {
     {
       slug: "alatool", no: "02.4", cat: "Branding", title: "Alatool", sub: "Brunch Spot Identity",
       client: "Alatool", bg: "#1546C8", fg: "#E6ECFF",
-      cover: "k108", hover: "k102", gallery: [["k102","k103"],"p38","p39","k107","p40"],
+      cover: "k108", hover: "k102", gallery: ["k102","p38","p39","p40"],
       about: [
         ["About Alatool", "Alatool is a modern breakfast and coffee brand created for fast-paced mornings, primarily targeting professionals and university students. Built around energy, warmth, and playfulness, the brand delivers a fresh experience that feels approachable, vibrant, and aligned with today’s lifestyle."],
         ["Challenges", "The main challenge was translating the brand’s energetic and friendly personality into a distinctive visual identity. It also needed to stand out in a highly competitive market, remain memorable, and reach the level of refinement seen in leading global breakfast and coffee brands."],
