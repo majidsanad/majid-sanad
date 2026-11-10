@@ -423,15 +423,20 @@
     /* marks: real vector logos, two slow rows */
     const tracks = $$(".js-mtrack");
     if (tracks.length) {
-      Promise.all(Array.from({ length: 28 }, (_, i) => i + 1).filter(n => n !== 9 /* YZL removed */).map(n => fetch(`img/logos/logo-${pad2(n)}.svg`).then(r => r.text()).catch(() => "")))
+      // logo 09 (YZL) removed. Sizes balance each logo's visual mass (ink area and density), not its height:
+      // measured once from the rendered SVGs; 1 = the row's base height
+      const MK = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28];
+      const MKS = { 1: 1.32, 2: .75, 3: .8, 4: 1.38, 5: 1.17, 6: 1.05, 7: 1.35, 8: .88, 10: 1.06, 11: 1.12, 12: 1.07, 13: 1, 14: 1.05, 15: .74,
+        16: .55, 17: .98, 18: 1.01, 19: .75, 20: .72, 21: 1, 22: 1.14, 23: 1.5, 24: .95, 25: .88, 26: 1.19, 27: .62, 28: .76 };
+      Promise.all(MK.map(n => fetch(`img/logos/logo-${pad2(n)}.svg`).then(r => r.text()).then(s => [n, s]).catch(() => [n, ""])))
         .then(svgs => {
           // phones: logos as images (drawn once) instead of inline vectors that iOS re-rasterises while moving
           const asImg = svg => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
             svg.replace(/currentColor/g, "#EFEFED").replace(/var\(--logo-bg[^)]*\)/g, "#0B0B0B"));
-          const cell = svg => fine ? `<span class="mk">${svg}</span>`
-            : `<span class="mk"><img src="${asImg(svg)}" alt="" decoding="async"></span>`;
+          const cell = ([n, svg]) => fine ? `<span class="mk" style="--s:${MKS[n]}">${svg}</span>`
+            : `<span class="mk" style="--s:${MKS[n]}"><img src="${asImg(svg)}" alt="" decoding="async"></span>`;
           [svgs.slice(0, 14), svgs.slice(14)].forEach((set, r) => {
-            const html = set.filter(Boolean).map(cell).join("");
+            const html = set.filter(x => x[1]).map(cell).join("");
             tracks[r].innerHTML = html + html;
           });
           // move each row by an exact pixel distance, started only once the logos have a size

@@ -826,3 +826,7 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 /* chapter cards: the big word on one line (size set by fitChapters in main.js) */
 .hchap .flex-word { white-space: nowrap; word-break: normal; display: inline-block; align-self: flex-start; }
 html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
+
+/* marks: each logo sized by visual mass (--s set per logo in main.js), so the row reads even */
+.mk { height: calc(clamp(48px, 5.4vw, 84px) * var(--s, 1)); }
+.marks__track { align-items: center; }
