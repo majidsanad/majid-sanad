@@ -330,6 +330,64 @@
       hbar.style.setProperty("--hp", p);
     });
 
+    /* the strip also moves sideways on its own: drag with a mouse, swipe with a finger, or a sideways
+       trackpad scroll. It stays scroll-linked: 1px sideways = 1px of page scroll inside the pinned section. */
+    {
+      const dir = AR ? -1 : 1;
+      const range = () => { const top = hSection.getBoundingClientRect().top + scrollY; return [top, top + trackMax]; };
+      const moveTo = y => { const [a, b] = range(); scrollTo({ top: clamp(y, a, b), behavior: "instant" }); };
+      $(".hwork").addEventListener("dragstart", e => e.preventDefault());
+      let glide = 0;
+      const stopGlide = () => { cancelAnimationFrame(glide); glide = 0; };
+      // trackpad: a sideways swipe moves the strip; vertical scrolling is left to the page
+      hSection.addEventListener("wheel", e => {
+        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || e.ctrlKey) return;
+        const [a, b] = range();
+        if (scrollY < a - 2 || scrollY > b + 2) return;      // only while the strip is pinned on screen
+        e.preventDefault(); stopGlide();
+        moveTo(scrollY + e.deltaX * dir);
+      }, { passive: false });
+      // drag / swipe
+      const stage = $(".hwork__sticky");
+      let down = false, dragging = false, sx = 0, sy = 0, sScroll = 0, lastX = 0, lastT = 0, vel = 0, moved = 0;
+      stage.addEventListener("pointerdown", e => {
+        if (e.button !== 0) return;
+        down = true; dragging = false; moved = 0; sx = lastX = e.clientX; sy = e.clientY; sScroll = scrollY; lastT = performance.now(); vel = 0;
+        stopGlide();
+      });
+      addEventListener("pointermove", e => {
+        if (!down) return;
+        const dx = e.clientX - sx, dy = e.clientY - sy;
+        if (!dragging) {
+          if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(dy)) { if (Math.abs(dy) > 10) down = false; return; }
+          dragging = true; stage.classList.add("is-drag");
+        }
+        moved = Math.max(moved, Math.abs(dx));
+        const now = performance.now();
+        vel = vel * .6 + ((e.clientX - lastX) / Math.max(1, now - lastT)) * .4;   // px per ms
+        lastX = e.clientX; lastT = now;
+        moveTo(sScroll - dx * dir);
+      });
+      const up = () => {
+        if (!down) return;
+        down = false;
+        if (!dragging) return;
+        dragging = false; stage.classList.remove("is-drag");
+        // let it glide a little, then settle
+        let v = clamp(-vel * dir * 14, -45, 45);             // px per frame, capped so a flick never throws it to the end
+        const step = () => {
+          if (Math.abs(v) < .4) { glide = 0; return; }
+          moveTo(scrollY + v); v *= .93;
+          glide = requestAnimationFrame(step);
+        };
+        if (Math.abs(v) > 1) glide = requestAnimationFrame(step);
+      };
+      addEventListener("pointerup", up); addEventListener("pointercancel", up);
+      // a drag is not a click: don't open the project at the end of a drag
+      stage.addEventListener("click", e => { if (moved > 6) { e.preventDefault(); e.stopPropagation(); moved = 0; } }, true);
+      addEventListener("wheel", e => { if (glide && Math.abs(e.deltaY) > Math.abs(e.deltaX)) stopGlide(); }, { passive: true });
+    }
+
     /* lettering: stacked carousel, moved only by the visitor (drag, arrows, keys, trackpad, click a side poster).
        Front poster full size; the ones behind get smaller and peek out to the sides (vertically on phones). */
     const drum = $(".js-drum");

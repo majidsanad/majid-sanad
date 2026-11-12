@@ -830,3 +830,8 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 /* marks: each logo sized by visual mass (--s set per logo in main.js), so the row reads even */
 .mk { height: calc(clamp(48px, 5.4vw, 84px) * var(--s, 1)); }
 .marks__track { align-items: center; }
+
+/* projects strip: can be dragged / swiped sideways (main.js); vertical page scroll still works */
+.hwork__sticky { touch-action: pan-y; }
+.hwork__sticky.is-drag { cursor: grabbing; user-select: none; -webkit-user-select: none; }
+.hwork__track img, .hwork__track a { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
