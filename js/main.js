@@ -485,8 +485,8 @@
       // measured once from the rendered SVGs; 1 = the row's base height
       const MK = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28];
       const MKS = { 1: 1.32, 2: .75, 3: .8, 4: 1.38, 5: 1.17, 6: 1.05, 7: 1.35, 8: .88, 10: 1.06, 11: 1.12, 12: 1.07, 13: 1, 14: 1.05, 15: .74,
-        16: .55, 17: .98, 18: 1.01, 19: .75, 20: .72, 21: 1, 22: 1.14, 23: 1.5, 24: .95, 25: .88, 26: 1.19, 27: .62, 28: .76 };
-      Promise.all(MK.map(n => fetch(`img/logos/logo-${pad2(n)}.svg`).then(r => r.text()).then(s => [n, s]).catch(() => [n, ""])))
+        16: .55, 17: .98, 18: 1.01, 19: .75, 20: .72, 21: 1, 22: 1.14, 23: .41, 24: .95, 25: .88, 26: 1.19, 27: .62, 28: .76 };
+      Promise.all(MK.map(n => fetch(`img/logos/logo-${pad2(n)}.svg?l=2`).then(r => r.text()).then(s => [n, s]).catch(() => [n, ""])))
         .then(svgs => {
           // phones: logos as images (drawn once) instead of inline vectors that iOS re-rasterises while moving
           const asImg = svg => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
