@@ -865,4 +865,30 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 
 /* 6. header: a calm surface, no glass saturation */
 .nav__pill { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+
+/* 7. one button size: the two big buttons are 48 tall, the header button 36 */
+.consult__btn, .contact__cta { padding: 16px 24px; font-size: 15px; line-height: 16px; gap: 12px; }
+.consult__btn { margin-top: 40px; }
+.nav__cta { padding: 10px 16px; line-height: 16px; }
+
+/* 8. spacing on the 4px grid */
+.nav { padding-top: 24px; padding-bottom: 24px; }
+@media (max-width: 860px) { .nav { padding-top: 16px; padding-bottom: 16px; } }
+.hero__pill { padding: 8px 16px; }
+.nav__lang { padding: 8px 16px; }
+.drum__ui { gap: 24px; }
+.foot { gap: 32px; }
+
+/* 9. the last capital, wide-spaced small text goes sentence case */
+.loader__top, .cursor__label, .drum__ui, .hero__card .hero__strip a span {
+  text-transform: none; letter-spacing: .01em;
+}
+.loader__top, .cursor__label { font-size: 12px; }
+
+/* 10. small text at weight 500, not 600 / 700 */
+.label, .loader__top, .cursor__label, .nav__cta, .nav__burger, .nav__lang, .menu__foot, .menu__links i,
+.hero__pill, .hero__metric span, .hero__scroll, .hero__strip a span,
+.hcard__no, .hcard__cat, .worked__list .n, .worked__list .d, .contact__list li span,
+.foot, .toast, .p-meta div span, .p-next__row, .drum__ui, .drum__count b,
+.consult__btn, .contact__cta, .about__facts dt { font-weight: 500; }
 /* ===== end unslop polish ===== */
