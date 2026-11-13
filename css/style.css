@@ -835,3 +835,34 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 .hwork__sticky { touch-action: pan-y; }
 .hwork__sticky.is-drag { cursor: grabbing; user-select: none; -webkit-user-select: none; }
 .hwork__track img, .hwork__track a { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
+
+/* ===== unslop polish (2026-11-13) — the whole block can be deleted to go back; tag before-unslop has the exact old site =====
+   unslop by Damir Sokolovsky (@heydamir), CC BY 4.0 */
+
+/* 1. the dot next to "Available for projects" stays still: nothing here is live */
+.hero__pill i { animation: none; }
+
+/* 2. the line next to "Selected work" no longer loops; it reaches out a little on hover */
+.hero__scroll i { animation: none; transform: none; transition: transform .4s var(--ease-out); transform-origin: left; }
+.hero__scroll:hover i { transform: scaleX(1.4); }
+
+/* 3. no zoom on hover: cards and logos answer with a colour / light change instead */
+.hcard:hover .hcard__media img, .hero__strip a:hover img, .lettering__row figure:hover img { transform: none; }
+.mk:hover, .mark:hover { transform: none; }
+.hero__strip a img { transition: filter .4s var(--ease-out); }
+.hero__strip a:hover img { filter: brightness(.82); }
+
+/* 4. the quote's author: plain, muted, not italic */
+.quote__by { font-style: normal; opacity: .55; }
+
+/* 5. small labels: sentence case, 12px, normal tracking (the big display titles stay uppercase, they are the brand) */
+.label, .hcard__cat, .contact__list li span, .p-meta div span, .foot, .worked__list .d,
+.hero__pill, .hero__metric span, .hero__scroll, .about__facts dt, .toast {
+  text-transform: none; letter-spacing: .01em;
+}
+.label, .hcard__cat, .contact__list li span, .p-meta div span, .foot, .about__facts dt { font-size: 12px; }
+.hero__metric span { font-size: 15px; }
+
+/* 6. header: a calm surface, no glass saturation */
+.nav__pill { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+/* ===== end unslop polish ===== */
