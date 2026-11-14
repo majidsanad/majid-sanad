@@ -640,7 +640,7 @@
     const idx = D.projects.findIndex(p => p.slug === slug);
     if (idx < 0) { location.replace(LP + "index.html#work"); return; }
     const p = D.projects[idx], next = D.projects[(idx + 1) % D.projects.length];
-    document.title = `${p.title} — ${p.sub} · ${T.me}`;
+    document.title = `${p.title} — ${p.sub} · ${T.me} | ماجد سند`;
     const sw = $(".js-lang");
     if (sw) sw.href = (AR ? "" : "ar/") + "project.html?p=" + p.slug;
     document.documentElement.style.setProperty("--pbg", p.bg);

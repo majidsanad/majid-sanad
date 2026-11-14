@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://majidsanad.github.io/majid-sanad/sitemap.xml
