@@ -657,7 +657,10 @@
       : p.mob && p.mob[item]
         // phones: a combined image is replaced by its single posters, one per row
         ? fig(item).replace("<figure>", '<figure class="g-wide g-desk">') + `<div class="g-mob">${p.mob[item].map(id => fig(id, "100vw")).join("")}</div>`
-        : fig(item).replace("<figure>", '<figure class="g-wide">')).join("");
+        : p.tall && p.tall.includes(item)
+          // a portrait photo is not stretched to the full width: it sits centred at a screen-friendly height
+          ? fig(item, "(max-width: 600px) 100vw, 60vw").replace("<figure>", '<figure class="g-wide g-tall">')
+          : fig(item).replace("<figure>", '<figure class="g-wide">')).join("");
 
     $("#project").innerHTML = `
       <section class="p-hero">

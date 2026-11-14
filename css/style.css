@@ -892,3 +892,7 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 .foot, .toast, .p-meta div span, .p-next__row, .drum__ui, .drum__count b,
 .consult__btn, .contact__cta, .about__facts dt { font-weight: 500; }
 /* ===== end unslop polish ===== */
+
+/* project gallery: a portrait photo sits centred instead of filling the full width */
+.p-gallery .g-tall { width: min(100%, calc(88vh * .805)); justify-self: center; }
+@media (max-width: 600px) { .p-gallery .g-tall { width: 100%; } }
