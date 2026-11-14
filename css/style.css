@@ -896,3 +896,9 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 /* project gallery: a portrait photo sits centred instead of filling the full width */
 .p-gallery .g-tall { width: min(100%, calc(88vh * .805)); justify-self: center; }
 @media (max-width: 600px) { .p-gallery .g-tall { width: 100%; } }
+
+/* performance: strips that are off screen don't animate */
+.is-off .hero__track, .marquee.is-off, .is-off .marks__track { animation-play-state: paused !important; }
+.mk img { height: 100%; width: auto; display: block; }
+.mk img { opacity: .82; transition: opacity .3s; }
+.mk:hover img { opacity: 1; }

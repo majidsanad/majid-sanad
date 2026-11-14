@@ -315,11 +315,16 @@
       }
       n++;
       html += `<a class="hcard" href="${LP}project.html?p=${p.slug}" data-cursor="${T.view}">
-        <div class="hcard__media">${pic(p.cover, "(max-width: 860px) 84vw, 56vw", p.title + " — " + p.sub, 'loading="lazy"')}${pic(p.hover, "(max-width: 860px) 84vw, 56vw", "", 'loading="lazy"')}</div>
+        <div class="hcard__media">${pic(p.cover, "(max-width: 860px) 84vw, 56vw", p.title + " — " + p.sub, 'loading="lazy"')}${pic(p.hover, "(max-width: 860px) 84vw, 56vw", "", 'loading="lazy"').replace(/ (src|srcset)=/g, " data-$1=")}</div>
         <div class="hcard__meta"><h3 class="hcard__title">${p.title}</h3><span class="hcard__cat">${p.cat} — ${p.sub}</span></div>
       </a>`;
     });
     hTrack.innerHTML = html;
+    // hover pictures load on the first hover (touch screens never show them, so they never download there)
+    if (fine) $$(".hcard", hTrack).forEach(c => c.addEventListener("pointerenter", () => {
+      const h = $(".hcard__media img + img", c);
+      if (h && h.dataset.src) { h.srcset = h.dataset.srcset; h.src = h.dataset.src; delete h.dataset.src; }
+    }, { once: true }));
     const hbar = $(".hwork__bar");
     sizeH();
     scrollers.push(() => {
@@ -398,7 +403,7 @@
       const stage = $(".drum__stage", drum);
       stage.innerHTML = IDS.map((n, i) => {
         const id = "l" + pad2(n);
-        return `<figure class="drum__card" data-i="${i}"><span class="drum__pic"><img src="img/lt/s/${id}.jpg${IV}" srcset="img/lt/s/${id}.jpg${IV} 640w, img/lt/${id}.jpg${IV} 1200w" sizes="(max-width: 600px) 75vw, 40vw" alt="${T.lett}" draggable="false"></span></figure>`;
+        return `<figure class="drum__card" data-i="${i}"><span class="drum__pic"><img src="img/lt/s/${id}.jpg?i=3" srcset="img/lt/s/${id}.jpg?i=3 640w, img/lt/m/${id}.jpg?i=3 1040w, img/lt/${id}.jpg?i=3 1200w" sizes="(max-width: 600px) 75vw, 500px" alt="${T.lett}" loading="lazy" decoding="async" draggable="false"></span></figure>`;
       }).join("");
       const cards = $$(".drum__card", stage);
       const vert = matchMedia("(max-width: 600px)");
@@ -491,8 +496,7 @@
           // phones: logos as images (drawn once) instead of inline vectors that iOS re-rasterises while moving
           const asImg = svg => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
             svg.replace(/currentColor/g, "#EFEFED").replace(/var\(--logo-bg[^)]*\)/g, "#0B0B0B"));
-          const cell = ([n, svg]) => fine ? `<span class="mk" style="--s:${MKS[n]}">${svg}</span>`
-            : `<span class="mk" style="--s:${MKS[n]}"><img src="${asImg(svg)}" alt="" decoding="async"></span>`;
+          const cell = ([n, svg]) => `<span class="mk" style="--s:${MKS[n]}"><img src="${asImg(svg)}" alt="" decoding="async"></span>`;
           [svgs.slice(0, 14), svgs.slice(14)].forEach((set, r) => {
             const html = set.filter(x => x[1]).map(cell).join("");
             tracks[r].innerHTML = html + html;
@@ -730,6 +734,16 @@
       ph.style.setProperty("--pc", (1.12 - clamp((vh - r.top) / (vh + r.height)) * .12).toFixed(3));
     });
     requestAnimationFrame(() => document.body.classList.add("loaded"));
+  }
+
+  /* ---------- moving strips pause while off screen (saves the browser repainting things nobody sees) ---------- */
+  {
+    const strips = $$(".hero__strip, .marquee, .marks__rows");
+    const vis = new IntersectionObserver(es => es.forEach(en => {
+      en.target.classList.toggle("is-off", !en.isIntersecting);
+      en.target.getAnimations({ subtree: true }).forEach(a => en.isIntersecting ? a.play() : a.pause());
+    }), { rootMargin: "100px 0px" });
+    strips.forEach(s => vis.observe(s));
   }
 
   observeReveals();
