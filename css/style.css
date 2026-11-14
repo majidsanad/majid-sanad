@@ -902,3 +902,7 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 .mk img { height: 100%; width: auto; display: block; }
 .mk img { opacity: .82; transition: opacity .3s; }
 .mk:hover img { opacity: 1; }
+
+/* About: 8+ / 150+ count up, "Obsessed." stretches with the scroll */
+.ab-why h2 b { font-weight: inherit; font-variant-numeric: tabular-nums; }
+.ab-why h2 .obsessed { will-change: font-variation-settings; }

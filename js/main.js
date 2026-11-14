@@ -201,7 +201,7 @@
       if (!en.isIntersecting) return;
       en.target.classList.add("in");
       io.unobserve(en.target);
-      if (en.target.matches(".statement__title")) countUp(en.target);
+      if (en.target.matches(".statement__title, .js-count")) countUp(en.target);
     });
   }, { threshold: .12, rootMargin: "0px 0px -6% 0px" });
   const observeReveals = () => $$(".reveal, .big-title, .statement__title, .contact__title, .consult__title,.p-title, .p-about h2, .p-gallery figure").forEach(el => io.observe(el));
@@ -735,6 +735,26 @@
     });
     requestAnimationFrame(() => document.body.classList.add("loaded"));
   }
+
+  /* ---------- "Obsessed." stretches with the scroll: narrow as it enters, widest in the middle of the screen ---------- */
+  $$(".js-stretch").forEach(el => {
+    // the widest it may get is measured per screen, so the word never drops to a second line
+    let maxW = 122;
+    const fit = () => {
+      const box = el.closest("h2").getBoundingClientRect().right - 4;
+      el.style.setProperty("--ow", 52); const a = el.getBoundingClientRect().right;
+      el.style.setProperty("--ow", 82); const b = el.getBoundingClientRect().right;
+      maxW = Math.max(52, Math.min(122, 52 + (box - a) / Math.max(1, (b - a) / 30)));
+    };
+    fit(); addEventListener("resize", fit);
+    if (document.fonts) document.fonts.ready.then(fit);
+    scrollers.push(() => {
+      const r = el.getBoundingClientRect();
+      if (!inView(r, 100)) return;
+      const p = clamp(1 - Math.abs((r.top + r.height / 2) / vh - .5) * 2);   // 0 at the edges, 1 at the centre
+      el.style.setProperty("--ow", (52 + (maxW - 52) * (reduce ? .3 : p)).toFixed(1));
+    });
+  });
 
   /* ---------- moving strips pause while off screen (saves the browser repainting things nobody sees) ---------- */
   {
