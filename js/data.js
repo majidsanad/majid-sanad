@@ -20,7 +20,7 @@ window.PORTFOLIO = {
     {
       slug: "jewar-al-haram", no: "02.2", cat: "Branding", title: "Jewar Al Haram", sub: "Visual Identity",
       client: "Retal Urban Development", bg: "#34331F", fg: "#E4D9C6",
-      cover: "k180", hover: "p23", gallery: ["p20","p21",["k087","k145"],"p22","p23","p24","p25","p26","p27"],
+      cover: "k180", hover: "j01", gallery: ["p20","p21",["k087","k145"],"p22","p23","p24","p25","p26","p27"],
       about: [
         ["About Jewar Al Haram", "Jewar Al Haram is a premium residential investment tower developed by Retal Urban Development Company, strategically located near Masjid al-Haram. The project was designed to offer a refined living experience that reflects both the spiritual significance of its location and the elevated standards of luxury hospitality."],
         ["Challenges", "The primary challenge was creating a visual identity that balances Islamic authenticity with contemporary luxury. The brand needed to capture the spiritual depth of its location while maintaining the sophistication expected from a high-end residential investment project."],
