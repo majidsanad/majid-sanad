@@ -3,7 +3,7 @@
    gallery: "id" = full-width image, ["id","id"] = images side by side. */
 window.PORTFOLIO = {
   whatsapp: "https://wa.me/966592918890",
-  email: "majid.sanad@outlook.com",
+  email: "majidsanad@outlook.com",
   instagram: "https://instagram.com/majid.sanad",
   linkedin: "https://www.linkedin.com/search/results/all/?keywords=Majid%20Sanad",
   projects: [
