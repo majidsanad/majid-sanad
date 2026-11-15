@@ -980,3 +980,7 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
   .foot .roll { height: auto; padding: 14px 0; margin: -14px 0; }
   .foot .roll span::after { content: none; }
 }
+
+/* custom cursor: the system arrow stays hidden on everything, so only the dot shows */
+@media (hover: hover) and (pointer: fine) { body.has-cursor, body.has-cursor * { cursor: none !important; } }
+.cursor { transition: width .45s var(--ease-out), height .45s var(--ease-out), margin .45s var(--ease-out), opacity .2s; }

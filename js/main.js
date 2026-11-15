@@ -91,12 +91,14 @@
   if (cursor && fine) {
     document.body.classList.add("has-cursor");
     const label = $(".cursor__label", cursor);
-    let cx = mouse.x, cy = mouse.y;
-    (function loop() {
-      cx = lerp(cx, mouse.x, .22); cy = lerp(cy, mouse.y, .22);
-      cursor.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
-      requestAnimationFrame(loop);
-    })();
+    // the dot sits exactly on the pointer (a trailing dot reads as a second cursor after the mouse rests)
+    let raf = 0;
+    addEventListener("pointermove", () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => { raf = 0; cursor.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0)`; });
+    }, { passive: true });
+    document.addEventListener("pointerleave", () => cursor.style.opacity = "0");
+    document.addEventListener("pointerenter", () => cursor.style.opacity = "");
     document.addEventListener("pointerover", e => {
       const t = e.target.closest("[data-cursor], a, button");
       const fx = !!(t && t.matches(".nav__cta, .consult__btn, .contact__cta"));
@@ -744,12 +746,13 @@
   /* ---------- "Obsessed." stretches with the scroll: narrow as it enters, widest in the middle of the screen ---------- */
   $$(".js-stretch").forEach(el => {
     // the widest it may get is measured per screen, so the word never drops to a second line
-    let maxW = 122;
+    let maxW = 78;
     const fit = () => {
       const box = el.closest("h2").getBoundingClientRect().right - 4;
       el.style.setProperty("--ow", 52); const a = el.getBoundingClientRect().right;
       el.style.setProperty("--ow", 82); const b = el.getBoundingClientRect().right;
-      maxW = Math.max(52, Math.min(122, 52 + (box - a) / Math.max(1, (b - a) / 30)));
+      maxW = Math.max(52, Math.min(78, 52 + (box - a) / Math.max(1, (b - a) / 30)));
+      el.style.setProperty("--ow", 52);   // back to the resting width after measuring
     };
     fit(); addEventListener("resize", fit);
     if (document.fonts) document.fonts.ready.then(fit);
