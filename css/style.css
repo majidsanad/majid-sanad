@@ -984,17 +984,16 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 /* custom cursor: the system arrow stays hidden on everything, so only the dot shows */
 .cursor { transition: width .45s var(--ease-out), height .45s var(--ease-out), margin .45s var(--ease-out), opacity .2s; }
 
-/* frame cursor: red corner brackets that slide to whatever you can click */
+
+/* tag cursor: the Mac arrow on every system, a red tag beside it on anything clickable */
 .cursor { display: none !important; }
-.frame-cursor { position: fixed; left: 0; top: 0; width: 0; height: 0; z-index: 95; pointer-events: none; opacity: 0;
-  transition: transform .38s var(--ease-out), width .38s var(--ease-out), height .38s var(--ease-out), opacity .2s; }
-.frame-cursor.jump { transition: opacity .2s; }
-.frame-cursor.on { opacity: 1; }
-.frame-cursor i { position: absolute; width: 12px; height: 12px; border: 2px solid var(--red); transition: border-color .2s; }
-.frame-cursor i:nth-child(1) { left: 0; top: 0; border-right: 0; border-bottom: 0; }
-.frame-cursor i:nth-child(2) { right: 0; top: 0; border-left: 0; border-bottom: 0; }
-.frame-cursor i:nth-child(3) { left: 0; bottom: 0; border-right: 0; border-top: 0; }
-.frame-cursor i:nth-child(4) { right: 0; bottom: 0; border-left: 0; border-top: 0; }
-.frame-cursor.on-red i { border-color: var(--ink); }
-@media (hover: none), (pointer: coarse) { .frame-cursor { display: none; } }
-@media (prefers-reduced-motion: reduce) { .frame-cursor { transition: opacity .2s; } }
+@media (hover: hover) and (pointer: fine) {
+  html, body, body * { cursor: url("/img/ui/cursor.svg") 5 2, default !important; }
+}
+.tag-cursor { position: fixed; left: 0; top: 0; z-index: 95; pointer-events: none; transform: translate3d(-200px, -200px, 0); }
+.tag-cursor span { display: block; background: var(--red); color: var(--ink); border-radius: 999px; white-space: nowrap;
+  font: 700 11px/1 var(--text); letter-spacing: .06em; text-transform: uppercase; padding: 7px 11px;
+  transform: translate(18px, 20px) scale(.7); transform-origin: 0 0; opacity: 0; transition: transform .3s var(--ease-out), opacity .15s; }
+.tag-cursor.on span { transform: translate(18px, 20px) scale(1); opacity: 1; }
+.tag-cursor.on-red span { background: var(--ink); color: var(--paper); }
+@media (hover: none), (pointer: coarse) { .tag-cursor { display: none; } }

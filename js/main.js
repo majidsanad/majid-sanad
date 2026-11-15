@@ -84,47 +84,41 @@
     tick(); setInterval(tick, 15000);
   }
 
-  /* ---------- cursor: the normal arrow, and red corner brackets that frame whatever can be clicked ---------- */
+  /* ---------- cursor: the Mac arrow for everyone, and a small red tag beside it on anything clickable ---------- */
   const mouse = { x: vw / 2, y: vh / 2 };
   addEventListener("pointermove", e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
   const oldDot = $(".cursor");
   if (oldDot) oldDot.remove();
   if (fine) {
-    const frame = document.createElement("div");
-    frame.className = "frame-cursor";
-    frame.setAttribute("aria-hidden", "true");
-    frame.innerHTML = "<i></i><i></i><i></i><i></i>";
-    document.body.appendChild(frame);
-    const PAD = 8;
+    const tag = document.createElement("div");
+    tag.className = "tag-cursor";
+    tag.setAttribute("aria-hidden", "true");
+    tag.innerHTML = '<span></span>';
+    document.body.appendChild(tag);
+    const txt = tag.firstChild;
     let target = null, raf = 0;
-    const place = () => {
-      raf = 0;
-      if (!target || !target.isConnected) { frame.classList.remove("on"); target = null; return; }
-      const r = target.getBoundingClientRect();
-      if (!r.width || r.bottom < 0 || r.top > innerHeight) { frame.classList.remove("on"); return; }
-      // big things (project cards, whole images) get a tighter inset so the brackets sit on them, not around the page
-      const p = r.width > innerWidth * .5 ? -12 : PAD;
-      frame.style.transform = `translate3d(${r.left - p}px, ${r.top - p}px, 0)`;
-      frame.style.width = r.width + p * 2 + "px";
-      frame.style.height = r.height + p * 2 + "px";
-      // on red sections the brackets turn black so they stay visible
-      const th = target.closest("[data-theme]");
-      frame.classList.toggle("on-red", !!(th && th.dataset.theme === "red") || !!target.closest(".consult, .ab-hero, .p-next[data-theme=red]"));
-      frame.classList.add("on");
-      // things that move on their own (strips, magnetic buttons) are followed every frame while hovered
-      raf = requestAnimationFrame(place);
+    const move = () => { raf = 0; tag.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0)`; };
+    addEventListener("pointermove", () => { if (!raf) raf = requestAnimationFrame(move); }, { passive: true });
+    const label = t => {
+      if (t.dataset.cursor) return t.dataset.cursor;
+      const h = t.getAttribute("href") || "";
+      if (/^mailto:/.test(h)) return AR ? "راسلني" : "Email";
+      if (/wa\.me/.test(h)) return AR ? "واتساب" : "Chat";
+      if (/^https?:/.test(h) && !h.includes(location.host)) return AR ? "افتح" : "Open";
+      if (t.classList.contains("js-copy")) return AR ? "انسخ" : "Copy";
+      return AR ? "افتح" : "Open";
     };
     document.addEventListener("pointerover", e => {
-      const t = e.target.closest("a, button, [data-cursor], .drum__card");
+      const t = e.target.closest("a, button, [data-cursor]");
       if (t === target) return;
-      if (!target && t) frame.classList.add("jump");      // first frame appears in place, later ones slide between targets
       target = t;
-      if (!t) { frame.classList.remove("on"); cancelAnimationFrame(raf); raf = 0; return; }
-      if (!raf) raf = requestAnimationFrame(place);
-      requestAnimationFrame(() => requestAnimationFrame(() => frame.classList.remove("jump")));
+      if (!t) { tag.classList.remove("on"); return; }
+      txt.textContent = label(t);
+      const th = t.closest("[data-theme]");
+      tag.classList.toggle("on-red", !!(th && th.dataset.theme === "red"));
+      tag.classList.add("on");
     });
-    document.addEventListener("pointerleave", () => { target = null; frame.classList.remove("on"); });
-    addEventListener("blur", () => { target = null; frame.classList.remove("on"); });
+    document.addEventListener("pointerleave", () => { target = null; tag.classList.remove("on"); });
   }
 
   /* ---------- magnetic buttons ---------- */
