@@ -35,7 +35,8 @@
   const img = (id, size = "s") => (size === "s" ? `img/w/s/${id}.webp` : size === "m" ? `img/w/m/${id}.webp` : `img/w/${id}.webp`) + IV;
   // responsive sources: the browser picks 1000 / 2000 / 4000px for the screen
   const srcset = id => `img/w/s/${id}.webp${IV} 1000w, img/w/m/${id}.webp${IV} 2000w, img/w/${id}.webp${IV} 4000w`;
-  const pic = (id, sizes, alt, extra = "") => `<img src="${img(id, "m")}" srcset="${srcset(id)}" sizes="${sizes}" alt="${alt}" ${extra}>`;
+  const wh = id => { const d = D.dims && D.dims[id]; return d ? `width="${d[0]}" height="${d[1]}"` : ""; };
+  const pic = (id, sizes, alt, extra = "") => `<img src="${img(id, "m")}" srcset="${srcset(id)}" sizes="${sizes}" alt="${alt}" ${wh(id)} ${extra}>`;
   const pad2 = n => String(n).padStart(2, "0");
   let vw = innerWidth, vh = innerHeight;
   const scrollers = [];
@@ -159,8 +160,8 @@
   document.addEventListener("click", e => {
     const b = e.target.closest(".js-copy");
     if (!b) return;
-    const v = b.dataset.copy;
-    (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => say(T.copied), () => (location.href = "mailto:" + v));
+    // the link itself opens the mail app; the address is also copied, for people without one set up
+    if (navigator.clipboard) navigator.clipboard.writeText(b.dataset.copy).then(() => say(T.copied), () => {});
   });
 
   /* ---------- in-page anchors: scroll here, never jump to another page ---------- */
@@ -186,7 +187,7 @@
     const a = e.target.closest("a[href]");
     if (!a || a.target === "_blank" || e.metaKey || e.ctrlKey) return;
     const href = a.getAttribute("href");
-    if (!/^(ar\/)?(index\.html|project\.html|about\.html|work\/)/.test(href)) return;
+    if (!/^(ar\/)?(index\.html|project\.html|about\.html|work\/|\.\/(#|$))/.test(href)) return;
     e.preventDefault();
     if (reduce) { location.href = href; return; }
     curtain.classList.remove("out"); curtain.classList.add("in");
@@ -237,6 +238,7 @@
   }
   function sizeH() {
     if (!hTrack) return;
+    if (matchMedia("(max-width: 600px)").matches) { trackMax = 0; hSection.style.height = ""; hTrack.style.transform = ""; return; }
     trackMax = Math.max(0, hTrack.scrollWidth - vw);
     hSection.style.height = (trackMax + vh) + "px";
   }
@@ -315,7 +317,7 @@
       }
       n++;
       html += `<a class="hcard" href="${AR ? LP + "project.html?p=" + p.slug : "work/" + p.slug + "/"}" data-cursor="${T.view}">
-        <div class="hcard__media">${pic(p.cover, "(max-width: 860px) 84vw, 56vw", p.title + " — " + p.sub, 'loading="lazy"')}${pic(p.hover, "(max-width: 860px) 84vw, 56vw", "", 'loading="lazy"').replace(/ (src|srcset)=/g, " data-$1=")}</div>
+        <div class="hcard__media">${pic(p.cover, "(max-width: 600px) 100vw, (max-width: 860px) 84vw, 56vw", p.title + " — " + p.sub, 'loading="lazy"')}${pic(p.hover, "(max-width: 600px) 100vw, (max-width: 860px) 84vw, 56vw", "", 'loading="lazy"').replace(/ (src|srcset)=/g, " data-$1=")}</div>
         <div class="hcard__meta"><h3 class="hcard__title">${p.title}</h3><span class="hcard__cat">${p.cat} — ${p.sub}</span></div>
       </a>`;
     });
@@ -329,7 +331,7 @@
     sizeH();
     scrollers.push(() => {
       const r = hSection.getBoundingClientRect();
-      if (!inView(r, vh)) return;
+      if (!trackMax || !inView(r, vh)) return;
       const p = clamp(-r.top / Math.max(1, r.height - vh));
       hTrack.style.transform = `translate3d(${(AR ? 1 : -1) * p * trackMax}px,0,0)`;
       hbar.style.setProperty("--hp", p);
@@ -346,7 +348,7 @@
       const stopGlide = () => { cancelAnimationFrame(glide); glide = 0; };
       // trackpad: a sideways swipe moves the strip; vertical scrolling is left to the page
       hSection.addEventListener("wheel", e => {
-        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || e.ctrlKey) return;
+        if (!trackMax || Math.abs(e.deltaX) <= Math.abs(e.deltaY) || e.ctrlKey) return;
         const [a, b] = range();
         if (scrollY < a - 2 || scrollY > b + 2) return;      // only while the strip is pinned on screen
         e.preventDefault(); stopGlide();
@@ -356,7 +358,7 @@
       const stage = $(".hwork__sticky");
       let down = false, dragging = false, sx = 0, sy = 0, sScroll = 0, lastX = 0, lastT = 0, vel = 0, moved = 0;
       stage.addEventListener("pointerdown", e => {
-        if (e.button !== 0) return;
+        if (e.button !== 0 || !trackMax) return;
         down = true; dragging = false; moved = 0; sx = lastX = e.clientX; sy = e.clientY; sScroll = scrollY; lastT = performance.now(); vel = 0;
         stopGlide();
       });
@@ -608,7 +610,7 @@
 
     /* loader */
     const loader = $(".loader"), count = $(".js-count");
-    const minTime = reduce ? 200 : sessionStorage.getItem("ms-visited") ? 600 : 1500;
+    const minTime = reduce ? 200 : sessionStorage.getItem("ms-visited") ? 250 : 900;
     const t0 = performance.now();
     let ready = false, finished = false;
     const assets = Promise.all([
@@ -627,7 +629,7 @@
       setTimeout(() => loader.remove(), 1400);
     };
     Promise.all([assets, new Promise(r => setTimeout(r, minTime))]).then(finish);
-    setTimeout(finish, minTime + 3500);
+    setTimeout(finish, minTime + 2000);
     (function load() {
       if (finished) return;
       const p = clamp((performance.now() - t0) / minTime);
@@ -642,7 +644,7 @@
   if (page === "project") {
     const slug = document.body.dataset.slug || new URLSearchParams(location.search).get("p");
     const idx = D.projects.findIndex(p => p.slug === slug);
-    if (idx < 0) { location.replace(LP + "index.html#work"); return; }
+    if (idx < 0) { location.replace(AR ? LP + "index.html#work" : "./#work"); return; }
     // old links (project.html?p=…) move to the project's own page
     if (!document.body.dataset.slug && !AR) { location.replace("work/" + slug + "/"); return; }
     const p = D.projects[idx], next = D.projects[(idx + 1) % D.projects.length];
@@ -670,7 +672,7 @@
 
     $("#project").innerHTML = `
       <section class="p-hero">
-        <div class="p-hero__top label"><a href="${LP}index.html#work" class="p-back roll"><span data-t="${T.allWork}">${T.allWork}</span></a><span>${p.cat}</span></div>
+        <div class="p-hero__top label"><a href="${AR ? LP + "index.html#work" : "./#work"}" class="p-back roll"><span data-t="${T.allWork}">${T.allWork}</span></a><span>${p.cat}</span></div>
         <h1 class="p-title">${lines.map(l => `<span class="line"><span>${l}</span></span>`).join("")}</h1>
         <div class="p-hero__row"><span class="p-sub">${p.sub}</span></div>
       </section>
@@ -680,7 +682,7 @@
         <div><span>${T.discipline}</span>${p.cat} — ${p.sub}</div>
         <div><span>${T.designer}</span>${T.me}</div>
       </div>
-      <figure class="p-cover">${pic(p.cover, "100vw", p.title + " — " + p.sub)}</figure>
+      <figure class="p-cover">${pic(p.cover, "100vw", p.title + " — " + p.sub, 'fetchpriority="high"')}</figure>
       <section class="p-about">
         <h2><span class="line"><span>${T.about[0]}</span></span><span class="line"><span>${T.about[1]}</span></span></h2>
         <div class="p-about__grid">${p.about.map(a => `<article class="reveal"><h3>${a[0]}</h3><p>${a[1]}</p></article>`).join("")}</div>
