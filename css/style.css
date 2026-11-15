@@ -1,5 +1,4 @@
 /* fonts: served from this site */
-@font-face { font-family: 'Alexandria'; font-style: normal; font-weight: 300 900; font-display: swap; src: url(/fonts/alexandria-arabic.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
 @font-face {
   font-family: 'Anybody';
   font-style: normal;
@@ -952,9 +951,3 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
   .p-hero .p-title { margin-top: 48px; }
 }
 
-/* Arabic pages: Alexandria for Arabic, Montserrat for the Latin names; no tracking or capitals in Arabic */
-[lang="ar"], [lang="ar"] * { font-family: "Alexandria", "Montserrat", sans-serif !important; letter-spacing: 0 !important; }
-html[lang="ar"] .p-title, html[lang="ar"] .big-title, html[lang="ar"] .p-next__title { line-height: 1.15; }
-html[lang="ar"] .p-title .line, html[lang="ar"] .big-title .line { padding-block: .06em; }
-html[lang="ar"] .ab-logos, html[lang="ar"] .nav, html[lang="ar"] .menu__foot { direction: ltr; }
-html[lang="ar"] .ab-why h2 b { unicode-bidi: isolate; }
