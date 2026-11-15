@@ -83,17 +83,18 @@
   --pad: 24px; --ease: cubic-bezier(.16, 1, .3, 1);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { background: linear-gradient(var(--red) 0 50%, var(--ink) 50% 100%); }
+html { background: var(--ink); }
 body { font-family: "Montserrat", system-ui, sans-serif; color: var(--paper); background: var(--ink); -webkit-font-smoothing: antialiased; }
 /* phones: newer iOS Safari tints the status bar from the page itself (it ignores theme-color), so the page behind the
    poster is red and the content block is black; a fixed red strip covers the status bar area while scrolling */
 @media (max-width: 520px) {
-  body { background: var(--red); }
-  .page { background: var(--ink); }
+  /* red only behind the top of the poster (what the status bar picks up); black everywhere below and around */
+  body { background: linear-gradient(var(--red) 0 160px, var(--ink) 160px); }
+  .top { animation: none !important; }   /* the poster is there from the first frame, so nothing shows through it */
   .sb { position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top); background: var(--red); z-index: 10; }
 }
 a { color: inherit; text-decoration: none; }
-.page { max-width: 480px; margin: 0 auto; min-height: 100svh; display: flex; flex-direction: column; }
+.page { max-width: 480px; margin: 0 auto; min-height: 100svh; min-height: 100dvh; display: flex; flex-direction: column; }
 
 /* red poster */
 .top { background: var(--red); color: var(--ink); padding: calc(env(safe-area-inset-top) + 32px) var(--pad) 24px; border-radius: 0 0 var(--r, 28px) var(--r, 28px); }
