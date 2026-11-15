@@ -84,29 +84,47 @@
     tick(); setInterval(tick, 15000);
   }
 
-  /* ---------- cursor ---------- */
-  const cursor = $(".cursor");
+  /* ---------- cursor: the normal arrow, and red corner brackets that frame whatever can be clicked ---------- */
   const mouse = { x: vw / 2, y: vh / 2 };
   addEventListener("pointermove", e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
-  if (cursor && fine) {
-    document.body.classList.add("has-cursor");
-    const label = $(".cursor__label", cursor);
-    // the dot sits exactly on the pointer (a trailing dot reads as a second cursor after the mouse rests)
-    let raf = 0;
-    addEventListener("pointermove", () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => { raf = 0; cursor.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0)`; });
-    }, { passive: true });
-    document.addEventListener("pointerleave", () => cursor.style.opacity = "0");
-    document.addEventListener("pointerenter", () => cursor.style.opacity = "");
+  const oldDot = $(".cursor");
+  if (oldDot) oldDot.remove();
+  if (fine) {
+    const frame = document.createElement("div");
+    frame.className = "frame-cursor";
+    frame.setAttribute("aria-hidden", "true");
+    frame.innerHTML = "<i></i><i></i><i></i><i></i>";
+    document.body.appendChild(frame);
+    const PAD = 8;
+    let target = null, raf = 0;
+    const place = () => {
+      raf = 0;
+      if (!target || !target.isConnected) { frame.classList.remove("on"); target = null; return; }
+      const r = target.getBoundingClientRect();
+      if (!r.width || r.bottom < 0 || r.top > innerHeight) { frame.classList.remove("on"); return; }
+      // big things (project cards, whole images) get a tighter inset so the brackets sit on them, not around the page
+      const p = r.width > innerWidth * .5 ? -12 : PAD;
+      frame.style.transform = `translate3d(${r.left - p}px, ${r.top - p}px, 0)`;
+      frame.style.width = r.width + p * 2 + "px";
+      frame.style.height = r.height + p * 2 + "px";
+      // on red sections the brackets turn black so they stay visible
+      const th = target.closest("[data-theme]");
+      frame.classList.toggle("on-red", !!(th && th.dataset.theme === "red") || !!target.closest(".consult, .ab-hero, .p-next[data-theme=red]"));
+      frame.classList.add("on");
+      // things that move on their own (strips, magnetic buttons) are followed every frame while hovered
+      raf = requestAnimationFrame(place);
+    };
     document.addEventListener("pointerover", e => {
-      const t = e.target.closest("[data-cursor], a, button");
-      const fx = !!(t && t.matches(".nav__cta, .consult__btn, .contact__cta"));
-      cursor.classList.toggle("is-hidden", fx);
-      cursor.classList.toggle("is-big", !fx && !!(t && t.dataset.cursor));
-      cursor.classList.toggle("is-link", !fx && !!(t && !t.dataset.cursor));
-      if (t && t.dataset.cursor) label.textContent = t.dataset.cursor;
+      const t = e.target.closest("a, button, [data-cursor], .drum__card");
+      if (t === target) return;
+      if (!target && t) frame.classList.add("jump");      // first frame appears in place, later ones slide between targets
+      target = t;
+      if (!t) { frame.classList.remove("on"); cancelAnimationFrame(raf); raf = 0; return; }
+      if (!raf) raf = requestAnimationFrame(place);
+      requestAnimationFrame(() => requestAnimationFrame(() => frame.classList.remove("jump")));
     });
+    document.addEventListener("pointerleave", () => { target = null; frame.classList.remove("on"); });
+    addEventListener("blur", () => { target = null; frame.classList.remove("on"); });
   }
 
   /* ---------- magnetic buttons ---------- */

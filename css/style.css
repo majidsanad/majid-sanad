@@ -125,7 +125,7 @@ h1, h2, h3, p, figure { margin: 0; }
 .cursor.is-big .cursor__label { opacity: 1; }
 .cursor.is-link { width: 44px; height: 44px; margin: -22px 0 0 -22px; }
 @media (hover: none), (pointer: coarse) { .cursor { display: none; } }
-@media (hover: hover) and (pointer: fine) { body.has-cursor, body.has-cursor a, body.has-cursor button { cursor: none; } }
+
 
 /* ---------- nav ---------- */
 .nav {
@@ -982,5 +982,19 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 }
 
 /* custom cursor: the system arrow stays hidden on everything, so only the dot shows */
-@media (hover: hover) and (pointer: fine) { body.has-cursor, body.has-cursor * { cursor: none !important; } }
 .cursor { transition: width .45s var(--ease-out), height .45s var(--ease-out), margin .45s var(--ease-out), opacity .2s; }
+
+/* frame cursor: red corner brackets that slide to whatever you can click */
+.cursor { display: none !important; }
+.frame-cursor { position: fixed; left: 0; top: 0; width: 0; height: 0; z-index: 95; pointer-events: none; opacity: 0;
+  transition: transform .38s var(--ease-out), width .38s var(--ease-out), height .38s var(--ease-out), opacity .2s; }
+.frame-cursor.jump { transition: opacity .2s; }
+.frame-cursor.on { opacity: 1; }
+.frame-cursor i { position: absolute; width: 12px; height: 12px; border: 2px solid var(--red); transition: border-color .2s; }
+.frame-cursor i:nth-child(1) { left: 0; top: 0; border-right: 0; border-bottom: 0; }
+.frame-cursor i:nth-child(2) { right: 0; top: 0; border-left: 0; border-bottom: 0; }
+.frame-cursor i:nth-child(3) { left: 0; bottom: 0; border-right: 0; border-top: 0; }
+.frame-cursor i:nth-child(4) { right: 0; bottom: 0; border-left: 0; border-top: 0; }
+.frame-cursor.on-red i { border-color: var(--ink); }
+@media (hover: none), (pointer: coarse) { .frame-cursor { display: none; } }
+@media (prefers-reduced-motion: reduce) { .frame-cursor { transition: opacity .2s; } }
