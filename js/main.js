@@ -186,7 +186,7 @@
     const a = e.target.closest("a[href]");
     if (!a || a.target === "_blank" || e.metaKey || e.ctrlKey) return;
     const href = a.getAttribute("href");
-    if (!/^(ar\/)?(index\.html|project\.html|about\.html)/.test(href)) return;
+    if (!/^(ar\/)?(index\.html|project\.html|about\.html|work\/)/.test(href)) return;
     e.preventDefault();
     if (reduce) { location.href = href; return; }
     curtain.classList.remove("out"); curtain.classList.add("in");
