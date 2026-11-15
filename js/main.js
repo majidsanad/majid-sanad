@@ -20,21 +20,21 @@
   const T = AR ? {
     view: "شوف", next: "التالي", hi: "هلا", copied: "تم نسخ الإيميل ✓",
     chapters: { Branding: ["الهويات", "البراند مو شعار… البراند وعد تشوفه بعينك.", ""], Campaign: ["الحملات", "أفكار تحرّك الناس — حملات توعية وإطلاقات ومواسم لجهات وطنية.", "dark"], Editorial: ["المطبوعات", "معلومات كثيرة، بس تنعرض بهدوء — بروفايلات وتقارير وكتيّبات.", ""] },
-    allWork: "→ كل الأعمال", client: "العميل", discipline: "المجال", designer: "المصمم", me: "Majid Sanad",
+    allWork: "→ كل الأعمال", client: "العميل", agency: "الوكالة", discipline: "المجال", designer: "المصمم", me: "Majid Sanad",
     about: ["عن", "المشروع"], similar: "عندك مشروع<br><em>زيه؟</em>", talk: "كلّمني", nextProject: "المشروع التالي", arrow: "←",
     foot: "مصمم جرافيك — © 2026. كل البراندات، كل الرؤية.", top: "ارجع فوق ↑", lett: "خط عربي يدوي — ماجد سند"
   } : {
     view: "View", next: "Next", hi: "Say hi", copied: "Email copied ✓",
     chapters: { Branding: ["Branding", "A brand is not a logo. It's a promise made visible.", ""], Campaign: ["Campaigns", "Ideas that move people — awareness, launches and seasonal campaigns for national entities.", "dark"], Editorial: ["Editorials", "Dense information, made calm. Profiles, reports and brochures.", ""] },
-    allWork: "← All work", client: "Client", discipline: "Discipline", designer: "Designer", me: "Majid Sanad",
+    allWork: "← All work", client: "Client", agency: "Agency", discipline: "Discipline", designer: "Designer", me: "Majid Sanad",
     about: ["About this", "project"], similar: "Have a similar<br><em>project?</em>", talk: "Let's talk", nextProject: "Next project", arrow: "→",
     foot: "Graphic Designer — © 2026. All brands. All vision.", top: "Back to top ↑", lett: "Arabic lettering by Majid Sanad"
   };
   // image ids: "p13" = cropped artboard, "k115" = original Links file
-  const IV = "?i=2"; // bump to force browsers to re-download images
-  const img = (id, size = "s") => (size === "s" ? `img/w/s/${id}.jpg` : size === "m" ? `img/w/m/${id}.jpg` : `img/w/${id}.jpg`) + IV;
+  const IV = "?i=3"; // bump to force browsers to re-download images
+  const img = (id, size = "s") => (size === "s" ? `img/w/s/${id}.webp` : size === "m" ? `img/w/m/${id}.webp` : `img/w/${id}.webp`) + IV;
   // responsive sources: the browser picks 1000 / 2000 / 4000px for the screen
-  const srcset = id => `img/w/s/${id}.jpg${IV} 1000w, img/w/m/${id}.jpg${IV} 2000w, img/w/${id}.jpg${IV} 4000w`;
+  const srcset = id => `img/w/s/${id}.webp${IV} 1000w, img/w/m/${id}.webp${IV} 2000w, img/w/${id}.webp${IV} 4000w`;
   const pic = (id, sizes, alt, extra = "") => `<img src="${img(id, "m")}" srcset="${srcset(id)}" sizes="${sizes}" alt="${alt}" ${extra}>`;
   const pad2 = n => String(n).padStart(2, "0");
   let vw = innerWidth, vh = innerHeight;
@@ -278,7 +278,7 @@
       const items = [];
       const SKIP = ["cyberani-profile", "alinma-fantasy"];
       D.projects.forEach((p, i) => { if (!SKIP.includes(p.slug)) items.push([p.cover, p.slug, p.title]); if (extra[i] && !SKIP.includes(extra[i][1])) items.push([extra[i][0], extra[i][1], D.projects.find(q => q.slug === extra[i][1]).title]); });
-      const html = items.map(([id, slug, title]) => `<a href="${LP}project.html?p=${slug}" data-cursor="${T.view}">${pic(id, "(max-width: 860px) 140px, 260px", title, 'decoding="async"')}<span>${title}</span></a>`).join("");
+      const html = items.map(([id, slug, title]) => `<a href="${AR ? LP + "project.html?p=" + slug : "work/" + slug + "/"}" data-cursor="${T.view}">${pic(id, "(max-width: 860px) 140px, 260px", title, 'decoding="async"')}<span>${title}</span></a>`).join("");
       track.innerHTML = html + html.replace(/<a /g, '<a aria-hidden="true" tabindex="-1" ');
     }
 
@@ -314,7 +314,7 @@
         lastCat = p.key;
       }
       n++;
-      html += `<a class="hcard" href="${LP}project.html?p=${p.slug}" data-cursor="${T.view}">
+      html += `<a class="hcard" href="${AR ? LP + "project.html?p=" + p.slug : "work/" + p.slug + "/"}" data-cursor="${T.view}">
         <div class="hcard__media">${pic(p.cover, "(max-width: 860px) 84vw, 56vw", p.title + " — " + p.sub, 'loading="lazy"')}${pic(p.hover, "(max-width: 860px) 84vw, 56vw", "", 'loading="lazy"').replace(/ (src|srcset)=/g, " data-$1=")}</div>
         <div class="hcard__meta"><h3 class="hcard__title">${p.title}</h3><span class="hcard__cat">${p.cat} — ${p.sub}</span></div>
       </a>`;
@@ -403,7 +403,7 @@
       const stage = $(".drum__stage", drum);
       stage.innerHTML = IDS.map((n, i) => {
         const id = "l" + pad2(n);
-        return `<figure class="drum__card" data-i="${i}"><span class="drum__pic"><img src="img/lt/s/${id}.jpg?i=3" srcset="img/lt/s/${id}.jpg?i=3 640w, img/lt/m/${id}.jpg?i=3 1040w, img/lt/${id}.jpg?i=3 1200w" sizes="(max-width: 600px) 75vw, 500px" alt="${T.lett}" loading="lazy" decoding="async" draggable="false"></span></figure>`;
+        return `<figure class="drum__card" data-i="${i}"><span class="drum__pic"><img src="img/lt/s/${id}.webp?i=4" srcset="img/lt/s/${id}.webp?i=4 640w, img/lt/m/${id}.webp?i=4 1040w, img/lt/${id}.webp?i=4 1200w" sizes="(max-width: 600px) 75vw, 500px" alt="${T.lett}" loading="lazy" decoding="async" draggable="false"></span></figure>`;
       }).join("");
       const cards = $$(".drum__card", stage);
       const vert = matchMedia("(max-width: 600px)");
@@ -496,7 +496,7 @@
           // phones: logos as images (drawn once) instead of inline vectors that iOS re-rasterises while moving
           const asImg = svg => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
             svg.replace(/currentColor/g, "#EFEFED").replace(/var\(--logo-bg[^)]*\)/g, "#0B0B0B"));
-          const cell = ([n, svg]) => `<span class="mk" style="--s:${MKS[n]}"><img src="${asImg(svg)}" alt="" decoding="async"></span>`;
+          const cell = ([n, svg]) => `<span class="mk" style="--s:${MKS[n]}"><img src="${asImg(svg)}" alt="${AR ? "شعار من تصميم ماجد سند" : "Logo designed by Majid Sanad"}" decoding="async"></span>`;
           [svgs.slice(0, 14), svgs.slice(14)].forEach((set, r) => {
             const html = set.filter(x => x[1]).map(cell).join("");
             tracks[r].innerHTML = html + html;
@@ -640,9 +640,11 @@
      PROJECT PAGE
      ========================================================= */
   if (page === "project") {
-    const slug = new URLSearchParams(location.search).get("p");
+    const slug = document.body.dataset.slug || new URLSearchParams(location.search).get("p");
     const idx = D.projects.findIndex(p => p.slug === slug);
     if (idx < 0) { location.replace(LP + "index.html#work"); return; }
+    // old links (project.html?p=…) move to the project's own page
+    if (!document.body.dataset.slug && !AR) { location.replace("work/" + slug + "/"); return; }
     const p = D.projects[idx], next = D.projects[(idx + 1) % D.projects.length];
     document.title = `${p.title} — ${p.sub} · ${T.me} | ماجد سند`;
     const sw = $(".js-lang");
@@ -674,6 +676,7 @@
       </section>
       <div class="p-meta">
         <div><span>${T.client}</span>${p.client}</div>
+        ${p.agency ? `<div><span>${T.agency}</span>${p.agency}</div>` : ""}
         <div><span>${T.discipline}</span>${p.cat} — ${p.sub}</div>
         <div><span>${T.designer}</span>${T.me}</div>
       </div>
@@ -687,7 +690,7 @@
         <p>${T.similar}</p>
         <a class="contact__cta magnetic" href="${D.whatsapp}" target="_blank" rel="noopener" data-cursor="${T.hi}"><span>${T.talk}</span><i><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M8 6h10v10" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></i></a>
       </section>
-      <a class="p-next" href="${LP}project.html?p=${next.slug}" data-cursor="${T.next}">
+      <a class="p-next" href="${AR ? LP + "project.html?p=" + next.slug : "work/" + next.slug + "/"}" data-cursor="${T.next}">
         <span class="label">${T.nextProject}</span>
         <div class="p-next__title">${next.title}</div>
         <div class="p-next__row"><span>${next.cat} — ${next.sub}</span><span>${T.arrow}</span></div>

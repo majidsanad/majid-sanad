@@ -1,15 +1,15 @@
-/* Content from the 2026 portfolio. Images: img/w/<id>.jpg (large) and img/w/s/<id>.jpg (small).
+/* Content from the 2026 portfolio. Images: img/w/<id>.webp (large), img/w/m/ and img/w/s/ (smaller).
    pNN = artboard NN cropped to its content, kNNN = original placed file from the Links folder.
    gallery: "id" = full-width image, ["id","id"] = images side by side. */
 window.PORTFOLIO = {
   whatsapp: "https://wa.me/966592918890",
   email: "majid@majidsanad.com",
   instagram: "https://instagram.com/majid.sanad",
-  linkedin: "https://www.linkedin.com/search/results/all/?keywords=Majid%20Sanad",
+  linkedin: "https://www.linkedin.com/in/majidsanad",
   projects: [
     {
       slug: "cyberani", no: "02.1", cat: "Branding", title: "Cyberani", sub: "Visual Identity",
-      client: "Cyberani — Aramco Digital", bg: "#0E1C66", fg: "#DCE8FA",
+      agency: "Akwan", client: "Cyberani — Aramco Digital", bg: "#0E1C66", fg: "#DCE8FA",
       cover: "k115", hover: "p16", gallery: ["p12","p13",["k143","k030"],"p14","p15","p16","k019","p17"],
       about: [
         ["About Cyberani", "Cyberani, a cybersecurity company under Aramco Digital, delivers advanced cyber defense solutions for critical digital infrastructure. This rebranding project focused on refreshing the visual identity to better reflect its technological strength while preserving its established recognition."],
@@ -19,7 +19,7 @@ window.PORTFOLIO = {
     },
     {
       slug: "jewar-al-haram", no: "02.2", cat: "Branding", title: "Jewar Al Haram", sub: "Visual Identity",
-      client: "Retal Urban Development", bg: "#34331F", fg: "#E4D9C6",
+      agency: "Akwan", client: "Retal Urban Development", bg: "#34331F", fg: "#E4D9C6",
       cover: "k180", hover: "j01", gallery: ["p20","p21",["k087","k145"],"p22","p23","p24","p25","p26","p27"],
       about: [
         ["About Jewar Al Haram", "Jewar Al Haram is a premium residential investment tower developed by Retal Urban Development Company, strategically located near Masjid al-Haram. The project was designed to offer a refined living experience that reflects both the spiritual significance of its location and the elevated standards of luxury hospitality."],
@@ -99,7 +99,7 @@ window.PORTFOLIO = {
     },
     {
       slug: "marasi", no: "05.1", cat: "Editorial", title: "Marasi by Retal", sub: "Brochure",
-      client: "Retal Urban Development", bg: "#0A0A0A", fg: "#EFEFEF",
+      agency: "Akwan", client: "Retal Urban Development", bg: "#0A0A0A", fg: "#EFEFEF",
       cover: "k070", hover: "k182", gallery: ["p76","k182",["k069","k038"],"p77","p78"],
       about: [
         ["Coastal Living Blueprint", "A refined editorial piece developed for Retal Urban Development Company, presenting the full vision of a waterfront residential project — a structured yet immersive guide translating architectural intent, spatial planning, and lifestyle into a clear visual narrative."],
@@ -109,7 +109,7 @@ window.PORTFOLIO = {
     },
     {
       slug: "cyberani-profile", no: "05.2", cat: "Editorial", title: "Cyberani Profile", sub: "Company Profile",
-      client: "Cyberani by Aramco Digital", bg: "#0A0A0A", fg: "#EFEFEF",
+      agency: "Akwan", client: "Cyberani by Aramco Digital", bg: "#0A0A0A", fg: "#EFEFEF",
       cover: "k179", hover: "k169", gallery: ["p80",["k173","k177"],"p81","p82"],
       about: [
         ["Digital Defense Overview", "An editorial corporate profile developed for Aramco Digital’s cybersecurity division, designed to present the organization’s identity, services, and solutions in a clear and structured narrative."],

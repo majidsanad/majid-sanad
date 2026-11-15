@@ -1,3 +1,40 @@
+/* fonts: served from this site */
+@font-face { font-family: 'Alexandria'; font-style: normal; font-weight: 300 900; font-display: swap; src: url(/fonts/alexandria-arabic.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face {
+  font-family: 'Anybody';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 50% 150%;
+  font-display: swap;
+  src: url(/fonts/anybody-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Anybody';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 50% 150%;
+  font-display: swap;
+  src: url(/fonts/anybody-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url(/fonts/montserrat-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url(/fonts/montserrat-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* =========================================================
    Majid Sanad — Portfolio
    Type: Anybody (display, variable width) + Montserrat (text)
@@ -906,3 +943,18 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 /* About: 8+ / 150+ count up, "Obsessed." stretches with the scroll */
 .ab-why h2 b { font-weight: inherit; font-variant-numeric: tabular-nums; }
 .ab-why h2 .obsessed { will-change: font-variation-settings; }
+
+/* project meta: room for the agency */
+.p-meta { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+/* phones: the project cover shows on the first screen instead of an empty block of colour */
+@media (max-width: 600px) {
+  .p-hero { min-height: 0; padding-top: 120px; padding-bottom: 36px; }
+  .p-hero .p-title { margin-top: 48px; }
+}
+
+/* Arabic pages: Alexandria for Arabic, Montserrat for the Latin names; no tracking or capitals in Arabic */
+[lang="ar"], [lang="ar"] * { font-family: "Alexandria", "Montserrat", sans-serif !important; letter-spacing: 0 !important; }
+html[lang="ar"] .p-title, html[lang="ar"] .big-title, html[lang="ar"] .p-next__title { line-height: 1.15; }
+html[lang="ar"] .p-title .line, html[lang="ar"] .big-title .line { padding-block: .06em; }
+html[lang="ar"] .ab-logos, html[lang="ar"] .nav, html[lang="ar"] .menu__foot { direction: ltr; }
+html[lang="ar"] .ab-why h2 b { unicode-bidi: isolate; }
