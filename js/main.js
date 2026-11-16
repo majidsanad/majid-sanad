@@ -91,8 +91,6 @@
   /* ---------- cursor: the Mac arrow for everyone, and a small red tag beside it on anything clickable ---------- */
   const mouse = { x: vw / 2, y: vh / 2 };
   addEventListener("pointermove", e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
-  const oldDot = $(".cursor");
-  if (oldDot) oldDot.remove();
   if (fine) {
     const tag = document.createElement("div");
     tag.className = "tag-cursor";
@@ -266,33 +264,6 @@
   if (page === "home") {
     $$(".js-words").forEach(splitWords);
 
-    /* hero: rolling word inside the statement */
-    const roller = $(".js-roller");
-    if (roller) {
-      // typewriter: the red word is typed, held, erased letter by letter, then the next one is typed
-      const words = $$(".roller__w", roller).map(w => w.textContent);
-      roller.classList.add("roller--type");
-      roller.innerHTML = `<span class="roller__t">${words[0]}</span><i class="roller__caret" aria-hidden="true"></i>`;
-      const t = $(".roller__t", roller);
-      let wi = 0;
-      const wait = ms => new Promise(r => setTimeout(r, ms));
-      window.__startHero = async () => {
-        if (reduce) return;
-        await wait(1800);
-        for (;;) {
-          const w = words[wi];
-          for (let n = w.length; n >= 0; n--) { t.textContent = w.slice(0, n); await wait(35); }
-          roller.classList.add("is-empty");
-          await wait(260);
-          wi = (wi + 1) % words.length;
-          const nw = words[wi];
-          roller.classList.remove("is-empty");
-          for (let n = 1; n <= nw.length; n++) { t.textContent = nw.slice(0, n); await wait(60 + Math.random() * 30); }
-          await wait(2000);
-        }
-      };
-    }
-
     /* hero (image mosaic): three rows of same-size pictures drifting sideways. They only show the range of the work
        (no links): project covers only (a detail picture means little outside its project), wide on laptops and portrait
        on phones. Every row carries all twelve projects, each starting from a different one, so no project is left out
@@ -316,32 +287,6 @@
       build();
       small.addEventListener("change", build);
     }
-
-    /* hero: strip of work, looping slowly */
-    const track = $(".js-strip .hero__track");
-    if (track) {
-      const extra = [["k102", "alatool"], ["k004", "sports-for-all"], ["k097", "frame-house"], ["k123", "sadeem"], ["k162", "do-not-give-it-a-chance"], ["k169", "cyberani-profile"], ["k182", "marasi"], ["k202", "alinma-fantasy"]];
-      const items = [];
-      const SKIP = ["cyberani-profile", "alinma-fantasy"];
-      D.projects.forEach((p, i) => { if (!SKIP.includes(p.slug)) items.push([p.cover, p.slug, p.title]); if (extra[i] && !SKIP.includes(extra[i][1])) items.push([extra[i][0], extra[i][1], D.projects.find(q => q.slug === extra[i][1]).title]); });
-      const html = items.map(([id, slug, title]) => `<a href="${AR ? LP + "project.html?p=" + slug : "work/" + slug + "/"}" data-cursor="${T.view}">${pic(id, "(max-width: 860px) 140px, 260px", title, 'decoding="async"')}<span>${title}</span></a>`).join("");
-      track.innerHTML = html + html.replace(/<a /g, '<a aria-hidden="true" tabindex="-1" ');
-    }
-
-    /* contact title: letters widen near the cursor (first-version effect) */
-    $$(".js-prox").forEach(splitChars);
-    const prox = $$(".js-prox .ch").map(c => ({ c, w: 62 }));
-    if (fine && !reduce && prox.length) scrollers.push(() => {
-      const box = $(".contact__title").getBoundingClientRect();
-      if (!inView(box)) return;
-      const R = Math.max(160, box.height * 1.2);
-      prox.forEach(o => {
-        const r = o.c.getBoundingClientRect();
-        const t = Math.max(0, 1 - Math.hypot(mouse.x - (r.left + r.width / 2), mouse.y - (r.top + r.height / 2)) / R);
-        o.w = lerp(o.w, 62 + t * t * 60, .14);
-        o.c.style.setProperty("--w", o.w.toFixed(1));
-      });
-    });
 
     /* marquee band: CSS-driven loop (runs on the compositor) */
     $$(".js-marquee").forEach(m => {
@@ -620,67 +565,6 @@
     $(".js-worked").innerHTML = D.workedAt.map((w, i) =>
       `<li class="reveal"><span class="a">${w[0]}</span><span class="r">${w[1]}</span><span class="d">${w[2]}</span></li>`).join("");
 
-    /* scroll-linked horizontal rows */
-    // rows marked js-drag also take a drag / swipe / sideways trackpad scroll on top of the scroll motion
-    const setX = el => {
-      let x = (el._base || 0) + (el._off || 0);
-      if (el._drag) {
-        const lim = Math.max(0, (el.scrollWidth - innerWidth) / 2 + 16);
-        x = clamp(x, -lim, lim); el._off = x - (el._base || 0);
-      }
-      el.style.setProperty("--x", x.toFixed(1) + "px");
-    };
-    $$(".js-xscroll").forEach(el => {
-      const dir = +el.dataset.dir || -1, amt = +el.dataset.amt || .3;
-      scrollers.push(() => {
-        const r = el.getBoundingClientRect();
-        if (!inView(r, 200)) return;
-        const p = clamp((vh - r.top) / (vh + r.height));
-        el._base = dir * (p - .5) * amt * r.width;
-        setX(el);
-      });
-    });
-    $$(".js-drag").forEach(el => {
-      el._drag = true; el._off = 0;
-      let down = false, sx = 0, so = 0, lx = 0, lt = 0, v = 0, raf = 0, moved = 0;
-      const glide = () => {
-        v *= .94; el._off += v; setX(el);
-        if (Math.abs(v) > .3) raf = requestAnimationFrame(glide);
-      };
-      el.addEventListener("pointerdown", e => {
-        if (e.button) return;
-        down = true; moved = 0; sx = lx = e.clientX; so = el._off; lt = performance.now(); v = 0;
-        cancelAnimationFrame(raf); el.classList.add("is-drag");
-      });
-      addEventListener("pointermove", e => {
-        if (!down) return;
-        const now = performance.now();
-        v = (e.clientX - lx) / Math.max(1, now - lt) * 16; lx = e.clientX; lt = now;
-        moved = Math.max(moved, Math.abs(e.clientX - sx));
-        el._off = so + (e.clientX - sx); setX(el);
-      });
-      const up = () => {
-        if (!down) return;
-        down = false; el.classList.remove("is-drag");
-        if (performance.now() - lt < 80) raf = requestAnimationFrame(glide);
-      };
-      addEventListener("pointerup", up); addEventListener("pointercancel", up);
-      el.addEventListener("click", e => { if (moved > 6) { e.preventDefault(); e.stopPropagation(); } }, true);
-      el.addEventListener("dragstart", e => e.preventDefault());
-      el.addEventListener("wheel", e => {
-        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-        e.preventDefault(); cancelAnimationFrame(raf);
-        el._off -= e.deltaX; setX(el);
-      }, { passive: false });
-    });
-
-    /* about photo parallax */
-    $$(".js-par").forEach(f => scrollers.push(() => {
-      const r = f.getBoundingClientRect();
-      if (!inView(r)) return;
-      f.style.setProperty("--py", (-(clamp((vh - r.top) / (vh + r.height))) * 12).toFixed(2) + "%");
-    }));
-
     /* quote words */
     const quote = $(".quote"), qs = $(".quote__sticky"), words = $$(".quote__text .w");
     if (quote) scrollers.push(() => {
@@ -691,8 +575,6 @@
       const lit = Math.floor(clamp(p * 1.25) * words.length);
       words.forEach((w, i) => w.classList.toggle("on", i < lit));
     });
-
-    /* floating whatsapp */
 
     /* loader */
     const loader = $(".loader"), count = $(".js-count");
@@ -711,7 +593,7 @@
       onResize();
       loader.classList.add("done");
       document.body.classList.remove("is-loading");
-      setTimeout(() => { document.body.classList.add("loaded"); window.__startHero && window.__startHero(); }, 250);
+      setTimeout(() => { document.body.classList.add("loaded"); }, 250);
       setTimeout(() => loader.remove(), 1400);
     };
     Promise.all([assets, new Promise(r => setTimeout(r, minTime))]).then(finish);
@@ -827,30 +709,9 @@
     requestAnimationFrame(() => document.body.classList.add("loaded"));
   }
 
-  /* ---------- "Obsessed." stretches with the scroll: narrow as it enters, widest in the middle of the screen ---------- */
-  $$(".js-stretch").forEach(el => {
-    // the widest it may get is measured per screen, so the word never drops to a second line
-    let maxW = 78;
-    const fit = () => {
-      const box = el.closest("h2").getBoundingClientRect().right - 4;
-      el.style.setProperty("--ow", 52); const a = el.getBoundingClientRect().right;
-      el.style.setProperty("--ow", 82); const b = el.getBoundingClientRect().right;
-      maxW = Math.max(52, Math.min(78, 52 + (box - a) / Math.max(1, (b - a) / 30)));
-      el.style.setProperty("--ow", 52);   // back to the resting width after measuring
-    };
-    fit(); addEventListener("resize", () => { if (!barOnly()) fit(); });
-    if (document.fonts) document.fonts.ready.then(fit);
-    scrollers.push(() => {
-      const r = el.getBoundingClientRect();
-      if (!inView(r, 100)) return;
-      const p = clamp(1 - Math.abs((r.top + r.height / 2) / vh - .5) * 2);   // 0 at the edges, 1 at the centre
-      el.style.setProperty("--ow", (52 + (maxW - 52) * (reduce ? .3 : p)).toFixed(1));
-    });
-  });
-
   /* ---------- moving strips pause while off screen (saves the browser repainting things nobody sees) ---------- */
   {
-    const strips = $$(".hero__strip, .marquee, .marks__rows, .hero2__rows");
+    const strips = $$(".marquee, .marks__rows, .hero2__rows");
     const vis = new IntersectionObserver(es => es.forEach(en => {
       en.target.classList.toggle("is-off", !en.isIntersecting);
       en.target.getAnimations({ subtree: true }).forEach(a => en.isIntersecting ? a.play() : a.pause());
