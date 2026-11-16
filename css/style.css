@@ -961,17 +961,6 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 }
 .menu__foot .menu__wa .ico { width: 16px; height: 16px; flex: none; }
 
-/* ---------- phones: the work is a plain vertical list (no pinned sideways strip to scroll through) ---------- */
-@media (max-width: 600px) {
-  .hwork__sticky { position: static; height: auto; overflow: visible; display: block; padding: 72px 0 56px; touch-action: auto; }
-  .hwork__top { margin-bottom: 20px; }
-  .hwork__track { flex-direction: column; align-items: stretch; gap: 36px; width: auto; transform: none !important; will-change: auto; }
-  .hwork__bar { display: none; }
-  .hchap { width: auto; height: auto; min-height: 0; gap: 28px; margin-top: 20px; }
-  .hchap:first-child { margin-top: 0; }
-  .hcard { width: auto; }
-}
-
 /* ---------- touch screens: links in the contact list and footer are tall enough to tap ---------- */
 @media (hover: none), (pointer: coarse) {
   .contact__list li { align-items: center; padding: 3px 0; }

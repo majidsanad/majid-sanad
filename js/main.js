@@ -252,7 +252,6 @@
   }
   function sizeH() {
     if (!hTrack) return;
-    if (matchMedia("(max-width: 600px)").matches) { trackMax = 0; hSection.style.height = ""; hTrack.style.transform = ""; return; }
     trackMax = Math.max(0, hTrack.scrollWidth - vw);
     hSection.style.height = (trackMax + vh) + "px";
   }
