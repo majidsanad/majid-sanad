@@ -1019,11 +1019,11 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 .hero2__row { height: var(--th); opacity: 0; transform: scale(1.04); transition: opacity 1.2s var(--ease-out), transform 1.6s var(--ease-out); }
 .hero2__row:nth-child(2) { transition-delay: .1s; } .hero2__row:nth-child(3) { transition-delay: .2s; }
 .loaded .hero2__row { opacity: 1; transform: none; }
-.hero2__track { display: flex; height: 100%; width: max-content; animation: strip 150s linear infinite; will-change: transform; backface-visibility: hidden; }
-/* rows are offset from each other like bricks, and the middle one runs the other way */
-.hero2__row:nth-child(1) .hero2__track { animation-delay: -20s; }
-.hero2__row:nth-child(2) .hero2__track { animation-duration: 180s; animation-direction: reverse; animation-delay: -47s; }
-.hero2__row:nth-child(3) .hero2__track { animation-duration: 135s; animation-delay: -71s; }
+.hero2__track { display: flex; height: 100%; width: max-content; animation: strip var(--dur, 150s) linear infinite; will-change: transform; backface-visibility: hidden; }
+/* all three rows drift together, same way and same speed. Each row starts four projects further on (set in main.js) plus a part of a tile, so the rows sit like bricks and the same cover stays about four tiles away from itself */
+.hero2__row:nth-child(2) .hero2__track { animation-delay: calc(var(--dur, 150s) * -.025); }
+.hero2__row:nth-child(3) .hero2__track { animation-delay: calc(var(--dur, 150s) * -.0125); }
+
 .hero2__track figure { flex: none; width: var(--tw); height: 100%; margin: 0 var(--g) 0 0; border-radius: 10px; overflow: hidden; background: #1a1a1a; }
 .hero2__track img { display: block; width: 100%; height: 100%; object-fit: cover; -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
 /* shade: a little at the top for the menu, more at the bottom for the line */
@@ -1046,9 +1046,9 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 @media (max-width: 700px) {
   .hero2 { --g: 8px; --tw: calc(var(--th) * .8); }
   .hero2__track figure { border-radius: 8px; }
-  .hero2__track { animation-duration: 120s; }
-  .hero2__row:nth-child(2) .hero2__track { animation-duration: 140s; }
-  .hero2__row:nth-child(3) .hero2__track { animation-duration: 105s; }
+  .hero2 { --dur: 120s; }
+
+
   .hero2__title { flex-wrap: wrap; gap: 0 4vw; font-size: 19.5vw; }
   .hero2__title > span:first-child { flex: 0 0 100%; }
   .hero2__text { display: flex; flex-direction: column; }
