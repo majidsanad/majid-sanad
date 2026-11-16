@@ -259,6 +259,7 @@
     trackMax = Math.max(0, hTrack.scrollWidth - vw);
     stageH = ($(".hwork__sticky") || {}).offsetHeight || vh;   // 100svh: does not change when a phone's address bar hides
     hSection.style.height = (trackMax + stageH) + "px";
+    hSection.style.setProperty("--tx", (AR ? 1 : -1) * trackMax + "px");
   }
 
   if (page === "home") {
@@ -346,10 +347,14 @@
       if (h && h.dataset.src) { h.srcset = h.dataset.srcset; h.src = h.dataset.src; delete h.dataset.src; }
     }, { once: true }));
     const hbar = $(".hwork__bar");
+    // where the browser supports it, the strip is moved by the scroll itself, off the main thread, so it stays glued to the finger
+    const sda = !reduce && window.CSS && CSS.supports("animation-timeline: view()") && CSS.supports("animation-range: contain 0% contain 100%");
+    hSection.classList.toggle("sda", !!sda);
     sizeH();
     scrollers.push(() => {
       const r = hSection.getBoundingClientRect();
       if (!trackMax || !inView(r, vh)) return;
+      if (sda) return;      // the browser moves the strip itself, tied to the scroll (CSS scroll-driven animation)
       const p = clamp(-r.top / Math.max(1, r.height - (stageH || vh)));
       hTrack.style.transform = `translate3d(${(AR ? 1 : -1) * p * trackMax}px,0,0)`;
       hbar.style.setProperty("--hp", p);

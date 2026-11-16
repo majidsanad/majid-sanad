@@ -994,3 +994,19 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
   .hcard__media { aspect-ratio: 4 / 5; }
   .hcard__media picture + img { display: none; }
 }
+
+/* projects strip: moved by the scroll itself where the browser can (no script chasing the scroll position) */
+@supports (animation-timeline: view()) {
+  .hwork.sda { view-timeline: --hw block; }
+  .hwork.sda .hwork__track { animation: hw-x linear both; animation-timeline: --hw; animation-range: contain 0% contain 100%; }
+  .hwork.sda .hwork__bar i { animation: hw-bar linear both; animation-timeline: --hw; animation-range: contain 0% contain 100%; }
+}
+@keyframes hw-x { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(var(--tx, 0px), 0, 0); } }
+@keyframes hw-bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* touch screens: no live blur behind the top bar (it is redrawn on every scroll frame); a denser tint instead */
+@media (hover: none), (pointer: coarse) {
+  .nav::before { -webkit-backdrop-filter: none; backdrop-filter: none;
+    background: linear-gradient(to bottom, rgba(var(--nav-bg, 11, 11, 11), .94) 0%, rgba(var(--nav-bg, 11, 11, 11), .8) 60%, rgba(var(--nav-bg, 11, 11, 11), 0) 100%); }
+  .nav__burger { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
