@@ -433,24 +433,31 @@
       }, { passive: false });
       // drag / swipe
       const stage = $(".hwork__sticky");
-      let down = false, dragging = false, sx = 0, sy = 0, sScroll = 0, lastX = 0, lastT = 0, vel = 0, moved = 0;
+      // everything is measured once when the finger / mouse goes down: reading the page position on every move lags on
+      // phones and makes the strip jump. One scroll per frame, to the newest target.
+      let down = false, dragging = false, sx = 0, sy = 0, sScroll = 0, lastX = 0, lastT = 0, vel = 0, moved = 0, lo = 0, hi = 0, want = 0, sraf = 0;
+      const flush = () => { sraf = 0; scrollTo({ top: want, behavior: "instant" }); };
+      const aim = y => { want = clamp(y, lo, hi); if (!sraf) sraf = requestAnimationFrame(flush); };
       stage.addEventListener("pointerdown", e => {
         if (e.button !== 0 || !trackMax) return;
-        down = true; dragging = false; moved = 0; sx = lastX = e.clientX; sy = e.clientY; sScroll = scrollY; lastT = performance.now(); vel = 0;
         stopGlide();
+        [lo, hi] = range();
+        // only while the strip is pinned on screen: before or after that a sideways drag would yank the page to the section
+        if (scrollY < lo - 2 || scrollY > hi + 2) { down = false; return; }
+        down = true; dragging = false; moved = 0; sx = lastX = e.clientX; sy = e.clientY; sScroll = want = scrollY; lastT = performance.now(); vel = 0;
       });
       addEventListener("pointermove", e => {
         if (!down) return;
         const dx = e.clientX - sx, dy = e.clientY - sy;
         if (!dragging) {
-          if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(dy)) { if (Math.abs(dy) > 10) down = false; return; }
+          if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy) * 1.2) { if (Math.abs(dy) > 10) down = false; return; }
           dragging = true; stage.classList.add("is-drag");
         }
         moved = Math.max(moved, Math.abs(dx));
         const now = performance.now();
         vel = vel * .6 + ((e.clientX - lastX) / Math.max(1, now - lastT)) * .4;   // px per ms
         lastX = e.clientX; lastT = now;
-        moveTo(sScroll - dx * dir);
+        aim(sScroll - dx * dir);
       });
       const up = () => {
         if (!down) return;
@@ -459,9 +466,11 @@
         dragging = false; stage.classList.remove("is-drag");
         // let it glide a little, then settle
         let v = clamp(-vel * dir * 14, -45, 45);             // px per frame, capped so a flick never throws it to the end
+        let pos = want;
         const step = () => {
-          if (Math.abs(v) < .4) { glide = 0; return; }
-          moveTo(scrollY + v); v *= .93;
+          if (Math.abs(v) < .4 || pos <= lo || pos >= hi) { glide = 0; return; }
+          pos = clamp(pos + v, lo, hi); v *= .93;
+          scrollTo({ top: pos, behavior: "instant" });
           glide = requestAnimationFrame(step);
         };
         if (Math.abs(v) > 1) glide = requestAnimationFrame(step);
