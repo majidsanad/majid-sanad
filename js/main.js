@@ -330,14 +330,14 @@
       }
       n++;
       html += `<a class="hcard" href="${AR ? LP + "project.html?p=" + p.slug : "work/" + p.slug + "/"}" data-cursor="${T.view}">
-        <div class="hcard__media">${pic(p.cover, "(max-width: 600px) 100vw, (max-width: 860px) 84vw, 56vw", p.title + " — " + p.sub, 'loading="lazy"')}${pic(p.hover, "(max-width: 600px) 100vw, (max-width: 860px) 84vw, 56vw", "", 'loading="lazy"').replace(/ (src|srcset)=/g, " data-$1=")}</div>
+        <div class="hcard__media"><picture><source media="(max-width: 600px)" srcset="img/w/v/${p.slug}.webp${IV}" width="1000" height="1250">${pic(p.cover, "(max-width: 860px) 84vw, 56vw", p.title + " — " + p.sub, 'loading="lazy"')}</picture>${pic(p.hover, "(max-width: 860px) 84vw, 56vw", "", 'loading="lazy"').replace(/ (src|srcset)=/g, " data-$1=")}</div>
         <div class="hcard__meta"><h3 class="hcard__title">${p.title}</h3><span class="hcard__cat">${p.cat} — ${p.sub}</span></div>
       </a>`;
     });
     hTrack.innerHTML = html;
     // hover pictures load on the first hover (touch screens never show them, so they never download there)
     if (fine) $$(".hcard", hTrack).forEach(c => c.addEventListener("pointerenter", () => {
-      const h = $(".hcard__media img + img", c);
+      const h = $(".hcard__media picture + img", c);
       if (h && h.dataset.src) { h.srcset = h.dataset.srcset; h.src = h.dataset.src; delete h.dataset.src; }
     }, { once: true }));
     const hbar = $(".hwork__bar");
