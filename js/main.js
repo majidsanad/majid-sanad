@@ -292,30 +292,31 @@
       };
     }
 
-    /* hero (image mosaic): three rows of same-size portrait pictures drifting sideways. They only show the range of the
-       work (no links): project covers mixed with lettering posters. Every picture is used once, in one row only. */
+    /* hero (image mosaic): three rows of same-size pictures drifting sideways. They only show the range of the work
+       (no links). Laptops: wide tiles, each project's cover and second picture. Phones: the portrait covers.
+       Every picture is used once, in one row only, and a row is long enough that a picture never meets its loop copy. */
     const mosaic = $(".js-mosaic");
     if (mosaic) {
-      const covers = D.projects.map(p => ({ src: `img/w/v/${p.slug}.webp${IV}`, alt: p.title + " — " + p.sub }));
-      const posters = [16, 19, 4, 9, 6, 11, 8, 17, 10, 14, 2, 7, 13, 18, 15, 5, 12].map(n => {
-        const f = "l" + pad2(n) + ".webp?i=4";
-        return { src: `img/lt/m/${f}`, set: `img/lt/s/${f} 640w, img/lt/m/${f} 1040w`, alt: T.lett };
-      });
-      // mix the two kinds evenly, then deal them out to the rows like cards
-      const all = [];
-      for (let c = 0, l = 0; c < covers.length || l < posters.length;) {
-        if (l < posters.length && (c >= covers.length || l * covers.length <= c * posters.length)) all.push(posters[l++]);
-        else all.push(covers[c++]);
-      }
-      const rows = [[], [], []];
-      all.forEach((o, k) => rows[k % 3].push(o));
-      const tile = (o, i) => `<figure><img src="${o.src}"${o.set ? ` srcset="${o.set}" sizes="(max-width: 700px) 80vw, 32vw"` : ""} alt="${o.alt}" width="1000" height="1250" decoding="async"${i < 4 ? "" : ' loading="lazy"'}></figure>`;
-      $$(".hero2__track", mosaic).forEach((t, i) => {
-        const h = rows[i].map(tile).join("");
-        // second copy makes the loop seamless; it is hidden from screen readers and always lazy
-        const copy = h.replace(/<figure>/g, '<figure aria-hidden="true">').replace(/ alt="[^"]*"/g, ' alt=""').replace(/ loading="lazy"/g, "").replace(/<img /g, '<img loading="lazy" ');
-        t.innerHTML = h + copy;
-      });
+      const P = D.projects, small = matchMedia("(max-width: 700px)");
+      const build = () => {
+        const all = [];
+        if (small.matches) P.forEach(p => all.push(`<img src="img/w/v/${p.slug}.webp${IV}" alt="${p.title} — ${p.sub}" width="1000" height="1250" decoding="async">`));
+        else {
+          // covers first, then the second pictures half a lap later, so a project's two pictures are far apart
+          P.forEach(p => all.push(pic(p.cover, "46vw", p.title + " — " + p.sub)));
+          P.forEach((_, i) => { const p = P[(i + 6) % P.length]; all.push(pic(p.hover, "46vw", p.title + " — " + p.sub)); });
+        }
+        const rows = [[], [], []];
+        all.forEach((h, k) => rows[k % 3].push(h));
+        $$(".hero2__track", mosaic).forEach((t, i) => {
+          const h = rows[i].map((im, n) => `<figure>${n < 3 ? im : im.replace("<img ", '<img loading="lazy" ')}</figure>`).join("");
+          // second copy makes the loop seamless; it is hidden from screen readers and always lazy
+          const copy = h.replace(/<figure>/g, '<figure aria-hidden="true">').replace(/ alt="[^"]*"/g, ' alt=""').replace(/ loading="lazy"/g, "").replace(/<img /g, '<img loading="lazy" ');
+          t.innerHTML = h + copy;
+        });
+      };
+      build();
+      small.addEventListener("change", build);
     }
 
     /* hero: strip of work, looping slowly */
