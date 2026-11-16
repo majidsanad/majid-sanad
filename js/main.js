@@ -292,6 +292,27 @@
       };
     }
 
+    /* hero (image mosaic): three rows of work drifting sideways, each tile opens its project */
+    const mosaic = $(".js-mosaic");
+    if (mosaic) {
+      const P = D.projects, link = p => AR ? LP + "project.html?p=" + p.slug : "work/" + p.slug + "/";
+      const ratio = id => { const d = D.dims && D.dims[id]; return d ? (d[0] / d[1]).toFixed(3) : "1.6"; };
+      const tile = (p, src, r, i) => `<a href="${link(p)}" data-cursor="${T.view}" style="aspect-ratio:${r}"><img src="${src}" alt="${p.title} — ${p.sub}" decoding="async"${i < 5 ? "" : ' loading="lazy"'}></a>`;
+      const wide = (p, id, i) => tile(p, img(id, "s"), ratio(id), i);
+      const rot = (a, n) => a.slice(n).concat(a.slice(0, n));
+      const rows = [
+        P.map((p, i) => wide(p, i % 2 ? p.hover : p.cover, i)),
+        rot(P, 4).map((p, i) => tile(p, `img/w/v/${p.slug}.webp${IV}`, ".8", i)),
+        rot(P, 7).map((p, i) => wide(p, i % 2 ? p.cover : p.hover, i)),
+      ];
+      $$(".hero2__track", mosaic).forEach((t, i) => {
+        const h = rows[i].join("");
+        // second copy makes the loop seamless; it is hidden from screen readers and always lazy
+        const copy = h.replace(/<a /g, '<a aria-hidden="true" tabindex="-1" ').replace(/ alt="[^"]*"/g, ' alt=""').replace(/ loading="lazy"/g, "").replace(/<img /g, '<img loading="lazy" ');
+        t.innerHTML = h + copy;
+      });
+    }
+
     /* hero: strip of work, looping slowly */
     const track = $(".js-strip .hero__track");
     if (track) {
@@ -787,7 +808,7 @@
 
   /* ---------- moving strips pause while off screen (saves the browser repainting things nobody sees) ---------- */
   {
-    const strips = $$(".hero__strip, .marquee, .marks__rows");
+    const strips = $$(".hero__strip, .marquee, .marks__rows, .hero2__rows");
     const vis = new IntersectionObserver(es => es.forEach(en => {
       en.target.classList.toggle("is-off", !en.isIntersecting);
       en.target.getAnimations({ subtree: true }).forEach(a => en.isIntersecting ? a.play() : a.pause());

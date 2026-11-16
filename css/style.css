@@ -1010,3 +1010,43 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
     background: linear-gradient(to bottom, rgba(var(--nav-bg, 11, 11, 11), .94) 0%, rgba(var(--nav-bg, 11, 11, 11), .8) 60%, rgba(var(--nav-bg, 11, 11, 11), 0) 100%); }
   .nav__burger { -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
+
+/* ---------- hero (image mosaic): rows of work drifting sideways, the line set large over them ---------- */
+.hero2 { position: relative; height: 100vh; height: 100svh; min-height: 540px; background: var(--ink); color: var(--paper); overflow: hidden; padding: 8px; }
+.hero2__rows { height: 100%; display: grid; grid-template-rows: minmax(0, 1fr) minmax(0, 2.1fr) minmax(0, 1.3fr); gap: 8px; }
+.hero2__row { overflow: hidden; border-radius: 10px; opacity: 0; transform: scale(1.04); transition: opacity 1.2s var(--ease-out), transform 1.6s var(--ease-out); }
+.hero2__row:nth-child(2) { transition-delay: .1s; } .hero2__row:nth-child(3) { transition-delay: .2s; }
+.loaded .hero2__row { opacity: 1; transform: none; }
+.hero2__track { display: flex; height: 100%; width: max-content; animation: strip 110s linear infinite; will-change: transform; backface-visibility: hidden; }
+.hero2__row:nth-child(2) .hero2__track { animation-duration: 140s; animation-direction: reverse; }
+.hero2__row:nth-child(3) .hero2__track { animation-duration: 95s; }
+.hero2__track a { position: relative; flex: none; height: 100%; margin-right: 8px; border-radius: 10px; overflow: hidden; background: #1a1a1a; }
+.hero2__track img { display: block; width: 100%; height: 100%; object-fit: cover; -webkit-user-drag: none; transition: transform 1s var(--ease-out), filter .4s var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .hero2__row:hover .hero2__track { animation-play-state: paused; }
+  .hero2__track a:hover img { transform: scale(1.04); filter: brightness(.8); }
+}
+/* shade: a little at the top for the menu, more at the bottom for the line */
+.hero2::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(11,11,11,.5) 0%, rgba(11,11,11,0) 16%, rgba(11,11,11,0) 52%, rgba(11,11,11,.4) 74%, rgba(11,11,11,.82) 100%); }
+.hero2__text { position: absolute; z-index: 1; left: var(--pad); right: var(--pad); bottom: clamp(20px, 4vh, 44px); pointer-events: none; }
+.hero2__label { font-size: 13px; font-weight: 600; margin-bottom: clamp(10px, 1.6vh, 18px); opacity: 0; transition: opacity 1s var(--ease-out) .7s; }
+.loaded .hero2__label { opacity: 1; }
+.hero2__title { display: flex; align-items: center; gap: 2.4vw; font-family: var(--display); text-transform: uppercase; white-space: nowrap; font-weight: inherit;
+  font-variation-settings: "wdth" 70, "wght" 800; font-size: clamp(48px, 9.6vw, 210px); line-height: .86; letter-spacing: -.01em; }
+.hero2__title > span { display: block; overflow: hidden; padding: .04em 0; margin: -.04em 0; }
+.hero2__title > span > span { display: block; transform: translateY(108%); transition: transform 1.2s var(--ease-out) .35s; }
+.hero2__title > span:last-child > span { transition-delay: .5s; }
+.hero2__title i { flex: 1; min-width: 4vw; height: .06em; background: var(--red); transform: scaleX(0); transform-origin: left; transition: transform 1.2s var(--ease-out) .75s; }
+.loaded .hero2__title > span > span { transform: none; }
+.loaded .hero2__title i { transform: scaleX(1); }
+@media (max-width: 700px) {
+  .hero2 { padding: 6px; }
+  .hero2__rows { gap: 6px; grid-template-rows: minmax(0, 1fr) minmax(0, 2.4fr) minmax(0, 1.5fr); }
+  .hero2__track a { margin-right: 6px; border-radius: 8px; }
+  .hero2__row { border-radius: 8px; }
+  .hero2__title { flex-wrap: wrap; gap: 0 4vw; font-size: 19.5vw; }
+  .hero2__title > span:first-child { flex: 0 0 100%; }
+  .hero2__label { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .hero2__track { animation: none; } .hero2__row { overflow-x: auto; opacity: 1; transform: none; } .hero2__title > span > span, .hero2__title i { transform: none; } }
