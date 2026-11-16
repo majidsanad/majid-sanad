@@ -293,21 +293,18 @@
     }
 
     /* hero (image mosaic): three rows of same-size pictures drifting sideways. They only show the range of the work
-       (no links). Laptops: wide tiles, each project's cover and second picture. Phones: the portrait covers.
-       Every picture is used once, in one row only, and a row is long enough that a picture never meets its loop copy. */
+       (no links): project covers only (a detail picture means little outside its project), wide on laptops and portrait
+       on phones. Every row carries all twelve projects, each starting from a different one, so no project is left out
+       and the same cover is never stacked right above itself. */
     const mosaic = $(".js-mosaic");
     if (mosaic) {
       const P = D.projects, small = matchMedia("(max-width: 700px)");
+      const rot = (a, n) => a.slice(n).concat(a.slice(0, n));
       const build = () => {
-        const all = [];
-        if (small.matches) P.forEach(p => all.push(`<img src="img/w/v/${p.slug}.webp${IV}" alt="${p.title} — ${p.sub}" width="1000" height="1250" decoding="async">`));
-        else {
-          // covers first, then the second pictures half a lap later, so a project's two pictures are far apart
-          P.forEach(p => all.push(pic(p.cover, "46vw", p.title + " — " + p.sub)));
-          P.forEach((_, i) => { const p = P[(i + 6) % P.length]; all.push(pic(p.hover, "46vw", p.title + " — " + p.sub)); });
-        }
-        const rows = [[], [], []];
-        all.forEach((h, k) => rows[k % 3].push(h));
+        const cover = small.matches
+          ? p => `<img src="img/w/v/${p.slug}.webp${IV}" alt="${p.title} — ${p.sub}" width="1000" height="1250" decoding="async">`
+          : p => pic(p.cover, "46vw", p.title + " — " + p.sub);
+        const rows = [rot(P, 0), rot(P, 4), rot(P, 8)].map(r => r.map(cover));
         $$(".hero2__track", mosaic).forEach((t, i) => {
           const h = rows[i].map((im, n) => `<figure>${n < 3 ? im : im.replace("<img ", '<img loading="lazy" ')}</figure>`).join("");
           // second copy makes the loop seamless; it is hidden from screen readers and always lazy
