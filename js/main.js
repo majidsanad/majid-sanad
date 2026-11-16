@@ -36,7 +36,11 @@
   // responsive sources: the browser picks 1000 / 2000 / 4000px for the screen
   const srcset = id => `img/w/s/${id}.webp${IV} 1000w, img/w/m/${id}.webp${IV} 2000w, img/w/${id}.webp${IV} 4000w`;
   const wh = id => { const d = D.dims && D.dims[id]; return d ? `width="${d[0]}" height="${d[1]}"` : ""; };
-  const pic = (id, sizes, alt, extra = "") => `<img src="${img(id, "m")}" srcset="${srcset(id)}" sizes="${sizes}" alt="${alt}" ${wh(id)} ${extra}>`;
+  const pic = (id, sizes, alt, extra = "") => `<img src="${img(id, "m")}" srcset="${srcset(id)}" sizes="${sizes}" alt="${alt}" decoding="async" ${wh(id)} ${extra}>`;
+  // on touch screens a "resize" that keeps the width is only the browser bar sliding in or out while scrolling
+  let lastW = innerWidth;
+  const barOnly = () => !fine && innerWidth === lastW;
+  addEventListener("resize", () => setTimeout(() => { lastW = innerWidth; }, 0));
   const pad2 = n => String(n).padStart(2, "0");
   let vw = innerWidth, vh = innerHeight;
   const scrollers = [];
@@ -235,7 +239,7 @@
   /* =========================================================
      HOME
      ========================================================= */
-  let hTrack, hSection, trackMax = 0;
+  let hTrack, hSection, trackMax = 0, stageH = 0;
   // chapter cards (Branding / Campaigns / Editorials): the big word stays on one line and fills the card;
   // all chapters share the size of the longest word so they match
   function fitChapters() {
@@ -253,7 +257,8 @@
   function sizeH() {
     if (!hTrack) return;
     trackMax = Math.max(0, hTrack.scrollWidth - vw);
-    hSection.style.height = (trackMax + vh) + "px";
+    stageH = ($(".hwork__sticky") || {}).offsetHeight || vh;   // 100svh: does not change when a phone's address bar hides
+    hSection.style.height = (trackMax + stageH) + "px";
   }
 
   if (page === "home") {
@@ -345,7 +350,7 @@
     scrollers.push(() => {
       const r = hSection.getBoundingClientRect();
       if (!trackMax || !inView(r, vh)) return;
-      const p = clamp(-r.top / Math.max(1, r.height - vh));
+      const p = clamp(-r.top / Math.max(1, r.height - (stageH || vh)));
       hTrack.style.transform = `translate3d(${(AR ? 1 : -1) * p * trackMax}px,0,0)`;
       hbar.style.setProperty("--hp", p);
     });
@@ -488,7 +493,7 @@
       };
       addEventListener("pointerup", end); addEventListener("pointercancel", end);
       new IntersectionObserver(es => es.forEach(en => { visible = en.isIntersecting; })).observe(drum);
-      addEventListener("resize", () => { measure(); render(); });
+      addEventListener("resize", () => { if (barOnly()) return; measure(); render(); });
       measure(); render();
       (function tick(t) {
         if (visible) {
@@ -765,7 +770,7 @@
       maxW = Math.max(52, Math.min(78, 52 + (box - a) / Math.max(1, (b - a) / 30)));
       el.style.setProperty("--ow", 52);   // back to the resting width after measuring
     };
-    fit(); addEventListener("resize", fit);
+    fit(); addEventListener("resize", () => { if (!barOnly()) fit(); });
     if (document.fonts) document.fonts.ready.then(fit);
     scrollers.push(() => {
       const r = el.getBoundingClientRect();
@@ -832,7 +837,7 @@
     $$(".hcard img").forEach(i => i.addEventListener("load", sizeH, { once: true }));
   }
   let rt;
-  addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(onResize, 120); });
+  addEventListener("resize", () => { if (barOnly()) return; clearTimeout(rt); rt = setTimeout(onResize, 120); });
   if (document.fonts) document.fonts.ready.then(onResize);
 
   /* ---------- nav hides on the way down, returns on the way up ---------- */
