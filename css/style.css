@@ -1058,3 +1058,21 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
   .hero2__label span:last-child { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .hero2__track { animation: none; } .hero2__row { opacity: 1; transform: none; } .hero2__title > span > span, .hero2__title i { transform: none; } }
+
+/* work strip groups: tabs at the top, and the bar cut where each group starts */
+.hwork__top { align-items: center; gap: 16px; }
+.hwork__tabs { display: flex; gap: clamp(14px, 2vw, 32px); }
+.hwork__tab { display: inline-flex; align-items: baseline; gap: 6px; padding: 10px 0; color: var(--paper); opacity: .4;
+  font-family: var(--display); font-variation-settings: "wdth" 80, "wght" 700; text-transform: uppercase; font-size: clamp(15px, 1.3vw, 20px); line-height: 1; transition: opacity .3s; }
+.hwork__tab i { font-family: var(--text); font-style: normal; font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; transition: color .3s; }
+.hwork__tab.on { opacity: 1; }
+.hwork__tab.on i { color: var(--red); }
+@media (hover: hover) { .hwork__tab:hover { opacity: 1; } }
+.hwork__tab:focus-visible { outline: 2px solid var(--red); outline-offset: 4px; opacity: 1; }
+.hwork__bar { position: relative; }
+.hwork__bar b { position: absolute; top: -3px; bottom: -3px; width: 6px; margin-inline-start: -3px; background: var(--ink); }
+@media (max-width: 600px) {
+  .hwork__top .label { display: none; }
+  .hwork__tabs { width: 100%; justify-content: space-between; gap: 8px; }
+  .hwork__tab { font-size: 15px; }
+}

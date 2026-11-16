@@ -239,7 +239,7 @@
   /* =========================================================
      HOME
      ========================================================= */
-  let hTrack, hSection, trackMax = 0, stageH = 0;
+  let hTrack, hSection, trackMax = 0, stageH = 0, placeGroups = null;
   // chapter cards (Branding / Campaigns / Editorials): the big word stays on one line and fills the card;
   // all chapters share the size of the longest word so they match
   function fitChapters() {
@@ -260,6 +260,7 @@
     stageH = ($(".hwork__sticky") || {}).offsetHeight || vh;   // 100svh: does not change when a phone's address bar hides
     hSection.style.height = (trackMax + stageH) + "px";
     hSection.style.setProperty("--tx", (AR ? 1 : -1) * trackMax + "px");
+    if (placeGroups) placeGroups();
   }
 
   if (page === "home") {
@@ -371,6 +372,35 @@
       if (h && h.dataset.src) { h.srcset = h.dataset.srcset; h.src = h.dataset.src; delete h.dataset.src; }
     }, { once: true }));
     const hbar = $(".hwork__bar");
+
+    /* groups: a tab per chapter at the top (the one on screen is lit, a click jumps to it) and the bar cut in three */
+    const chaps = $$(".hchap", hTrack), tabsBox = $(".js-htabs");
+    let groupAt = [];
+    if (tabsBox && chaps.length) {
+      const count = k => D.projects.filter(p => p.key === k).length;
+      const keys = [...new Set(D.projects.map(p => p.key))];
+      tabsBox.innerHTML = keys.map((k, i) => `<button type="button" class="hwork__tab" data-g="${i}" data-cursor="${T.view}"><span>${chapters[k][0]}</span><i>${pad2(count(k))}</i></button>`).join("");
+      const tabs = $$(".hwork__tab", tabsBox);
+      const cuts = chaps.slice(1).map(() => { const b = document.createElement("b"); hbar.appendChild(b); return b; });
+      // where each group starts, as a distance along the strip (0 … trackMax)
+      placeGroups = () => {
+        const t0 = hTrack.getBoundingClientRect().left;
+        groupAt = chaps.map((c, i) => i ? clamp((AR ? -1 : 1) * (c.getBoundingClientRect().left - t0) - parseFloat(getComputedStyle(hTrack).paddingLeft || 0), 0, trackMax) : 0);
+        if (AR) groupAt = chaps.map((c, i) => i ? clamp(t0 + hTrack.offsetWidth - c.getBoundingClientRect().right - parseFloat(getComputedStyle(hTrack).paddingRight || 0), 0, trackMax) : 0);
+        cuts.forEach((b, i) => { b.style.insetInlineStart = (trackMax ? groupAt[i + 1] / trackMax * 100 : 0) + "%"; });
+      };
+      const top = () => hSection.getBoundingClientRect().top + scrollY;
+      tabs.forEach((b, i) => b.addEventListener("click", () => scrollTo({ top: top() + (groupAt[i] || 0) + (i ? 1 : 0), behavior: reduce ? "instant" : "smooth" })));
+      let on = -1;
+      scrollers.push(() => {
+        const r = hSection.getBoundingClientRect();
+        if (!trackMax || !inView(r, vh)) return;
+        const x = clamp(-r.top, 0, trackMax) + vw * .35;      // a group counts once its chapter card is well inside the screen
+        let g = 0;
+        for (let i = 1; i < groupAt.length; i++) if (x >= groupAt[i]) g = i;
+        if (g !== on) { on = g; tabs.forEach((b, i) => { b.classList.toggle("on", i === g); b.setAttribute("aria-current", i === g ? "true" : "false"); }); }
+      });
+    }
     // where the browser supports it, the strip is moved by the scroll itself, off the main thread, so it stays glued to the finger
     const sda = !reduce && window.CSS && CSS.supports("animation-timeline: view()") && CSS.supports("animation-range: contain 0% contain 100%");
     hSection.classList.toggle("sda", !!sda);
