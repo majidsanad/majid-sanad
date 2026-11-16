@@ -292,20 +292,26 @@
       };
     }
 
-    /* hero (image mosaic): three rows of same-size pictures drifting sideways; they only show the range of the work (no links) */
+    /* hero (image mosaic): three rows of same-size portrait pictures drifting sideways. They only show the range of the
+       work (no links): project covers mixed with lettering posters. Every picture is used once, in one row only. */
     const mosaic = $(".js-mosaic");
     if (mosaic) {
-      const P = D.projects;
-      const rot = (a, n) => a.slice(n).concat(a.slice(0, n));
-      // laptops get a wide picture, phones the portrait cover of the same project
-      const tile = (p, id, i) => `<figure><picture><source media="(max-width: 700px)" srcset="img/w/v/${p.slug}.webp${IV}">${pic(id, "46vw", p.title + " — " + p.sub, i < 3 ? "" : 'loading="lazy"')}</picture></figure>`;
-      const rows = [
-        P.map((p, i) => tile(p, p.hover, i)),
-        rot(P, 4).map((p, i) => tile(p, p.cover, i)),
-        rot(P, 8).map((p, i) => tile(p, i % 2 ? p.cover : p.hover, i)),
-      ];
+      const covers = D.projects.map(p => ({ src: `img/w/v/${p.slug}.webp${IV}`, alt: p.title + " — " + p.sub }));
+      const posters = [16, 19, 4, 9, 6, 11, 8, 17, 10, 14, 2, 7, 13, 18, 15, 5, 12].map(n => {
+        const f = "l" + pad2(n) + ".webp?i=4";
+        return { src: `img/lt/m/${f}`, set: `img/lt/s/${f} 640w, img/lt/m/${f} 1040w`, alt: T.lett };
+      });
+      // mix the two kinds evenly, then deal them out to the rows like cards
+      const all = [];
+      for (let c = 0, l = 0; c < covers.length || l < posters.length;) {
+        if (l < posters.length && (c >= covers.length || l * covers.length <= c * posters.length)) all.push(posters[l++]);
+        else all.push(covers[c++]);
+      }
+      const rows = [[], [], []];
+      all.forEach((o, k) => rows[k % 3].push(o));
+      const tile = (o, i) => `<figure><img src="${o.src}"${o.set ? ` srcset="${o.set}" sizes="(max-width: 700px) 80vw, 32vw"` : ""} alt="${o.alt}" width="1000" height="1250" decoding="async"${i < 4 ? "" : ' loading="lazy"'}></figure>`;
       $$(".hero2__track", mosaic).forEach((t, i) => {
-        const h = rows[i].join("");
+        const h = rows[i].map(tile).join("");
         // second copy makes the loop seamless; it is hidden from screen readers and always lazy
         const copy = h.replace(/<figure>/g, '<figure aria-hidden="true">').replace(/ alt="[^"]*"/g, ' alt=""').replace(/ loading="lazy"/g, "").replace(/<img /g, '<img loading="lazy" ');
         t.innerHTML = h + copy;
@@ -862,7 +868,7 @@
     $$(".hcard img").forEach(i => i.addEventListener("load", sizeH, { once: true }));
   }
   let rt;
-  addEventListener("resize", () => { if (barOnly()) return; clearTimeout(rt); rt = setTimeout(onResize, 120); });
+  addEventListener("resize", () => { if (barOnly()) { vh = innerHeight; return; } clearTimeout(rt); rt = setTimeout(onResize, 120); });
   if (document.fonts) document.fonts.ready.then(onResize);
 
   /* ---------- nav hides on the way down, returns on the way up ---------- */
