@@ -1013,7 +1013,7 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 
 /* ---------- hero (image mosaic): rows of same-size pictures drifting sideways, the line set large over them ---------- */
 /* --th: tile height. Half of the top row and about 60% of the bottom row are inside the screen; the middle row is whole. */
-.hero2 { --g: 10px; --th: calc((max(100svh, 540px) - var(--g) * 2) / 2.1); --tw: calc(var(--th) * 1.5);
+.hero2 { --g: 10px; --th: calc((max(100svh, 540px) - var(--g) * 2) / 2.1); --tw: calc(var(--th) * 16 / 9);
   position: relative; height: 100vh; height: 100svh; min-height: 540px; background: var(--ink); color: var(--paper); overflow: hidden; }
 .hero2__rows { position: absolute; left: 0; right: 0; top: calc(var(--th) * -.5); display: flex; flex-direction: column; gap: var(--g); }
 .hero2__row { height: var(--th); opacity: 0; transform: scale(1.04); transition: opacity 1.2s var(--ease-out), transform 1.6s var(--ease-out); }
@@ -1031,7 +1031,9 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
   background:
     /* a soft dark patch behind the logo, fading out with no visible edge, so the name holds on any picture */
     radial-gradient(ellipse 420px 190px at 0 0, rgba(11,11,11,.62) 0%, rgba(11,11,11,.42) 35%, rgba(11,11,11,.16) 68%, rgba(11,11,11,0) 100%),
-    linear-gradient(to bottom, rgba(11,11,11,.5) 0%, rgba(11,11,11,0) 16%, rgba(11,11,11,0) 52%, rgba(11,11,11,.4) 74%, rgba(11,11,11,.82) 100%); }
+    linear-gradient(to bottom, rgba(11,11,11,.5) 0%, rgba(11,11,11,0) 16%, rgba(11,11,11,0) 52%, rgba(11,11,11,.4) 74%, rgba(11,11,11,.82) 100%),
+    /* a very light veil over all the pictures */
+    linear-gradient(rgba(11,11,11,.14), rgba(11,11,11,.14)); }
 .hero2__text { position: absolute; z-index: 1; left: var(--pad); right: var(--pad); bottom: clamp(20px, 4vh, 44px); pointer-events: none; }
 .hero2__label { display: flex; justify-content: space-between; gap: 16px; white-space: nowrap; font-size: 13px; font-weight: 600; margin-bottom: clamp(10px, 1.6vh, 18px); opacity: 0; transition: opacity 1s var(--ease-out) .7s; }
 .loaded .hero2__label { opacity: 1; }
