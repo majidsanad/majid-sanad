@@ -292,23 +292,22 @@
       };
     }
 
-    /* hero (image mosaic): three rows of work drifting sideways, each tile opens its project */
+    /* hero (image mosaic): three rows of same-size pictures drifting sideways; they only show the range of the work (no links) */
     const mosaic = $(".js-mosaic");
     if (mosaic) {
-      const P = D.projects, link = p => AR ? LP + "project.html?p=" + p.slug : "work/" + p.slug + "/";
-      const ratio = id => { const d = D.dims && D.dims[id]; return d ? (d[0] / d[1]).toFixed(3) : "1.6"; };
-      const tile = (p, src, r, i) => `<a href="${link(p)}" data-cursor="${T.view}" style="aspect-ratio:${r}"><img src="${src}" alt="${p.title} — ${p.sub}" decoding="async"${i < 5 ? "" : ' loading="lazy"'}></a>`;
-      const wide = (p, id, i) => tile(p, img(id, "s"), ratio(id), i);
+      const P = D.projects;
       const rot = (a, n) => a.slice(n).concat(a.slice(0, n));
+      // laptops get a wide picture, phones the portrait cover of the same project
+      const tile = (p, id, i) => `<figure><picture><source media="(max-width: 700px)" srcset="img/w/v/${p.slug}.webp${IV}">${pic(id, "46vw", p.title + " — " + p.sub, i < 3 ? "" : 'loading="lazy"')}</picture></figure>`;
       const rows = [
-        P.map((p, i) => wide(p, i % 2 ? p.hover : p.cover, i)),
-        rot(P, 4).map((p, i) => tile(p, `img/w/v/${p.slug}.webp${IV}`, ".8", i)),
-        rot(P, 7).map((p, i) => wide(p, i % 2 ? p.cover : p.hover, i)),
+        P.map((p, i) => tile(p, p.hover, i)),
+        rot(P, 4).map((p, i) => tile(p, p.cover, i)),
+        rot(P, 8).map((p, i) => tile(p, i % 2 ? p.cover : p.hover, i)),
       ];
       $$(".hero2__track", mosaic).forEach((t, i) => {
         const h = rows[i].join("");
         // second copy makes the loop seamless; it is hidden from screen readers and always lazy
-        const copy = h.replace(/<a /g, '<a aria-hidden="true" tabindex="-1" ').replace(/ alt="[^"]*"/g, ' alt=""').replace(/ loading="lazy"/g, "").replace(/<img /g, '<img loading="lazy" ');
+        const copy = h.replace(/<figure>/g, '<figure aria-hidden="true">').replace(/ alt="[^"]*"/g, ' alt=""').replace(/ loading="lazy"/g, "").replace(/<img /g, '<img loading="lazy" ');
         t.innerHTML = h + copy;
       });
     }
