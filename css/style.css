@@ -794,3 +794,8 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 
 /* lettering drum: the cards order themselves among each other only, never above the top bar */
 .drum__stage { isolation: isolate; }
+
+/* marquee band under the hero: an endless loop, also with Reduce Motion on (the global reduce rule above would stop it after one pass) */
+@media (prefers-reduced-motion: reduce) {
+  .marquee { animation-duration: 45s !important; animation-iteration-count: infinite !important; }
+}
