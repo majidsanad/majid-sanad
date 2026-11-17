@@ -791,3 +791,6 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 .hwork__track .hcard { display: flex; flex-direction: column; }
 .hwork__track .hcard__media { flex: none; }
 .hwork__track .hcard__meta { flex: 1; align-content: start; }
+
+/* lettering drum: the cards order themselves among each other only, never above the top bar */
+.drum__stage { isolation: isolate; }
