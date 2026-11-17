@@ -40,7 +40,7 @@
    ========================================================= */
 :root {
   --red: #EF2B3C;
-  --ink: #0B0B0B;
+  --ink: #000000;
   --paper: #EFEFED;
   --mute: #8a8a8a;
   --pad: clamp(18px, 3.2vw, 56px);
@@ -508,7 +508,7 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 /* soft blurred bar behind the nav once the page scrolls: tinted with the section underneath, fading out at the bottom */
 .nav::before {
   content: ""; position: absolute; inset: 0 0 -28px; z-index: -1; pointer-events: none;
-  background: linear-gradient(to bottom, rgba(var(--nav-bg, 11, 11, 11), .78) 0%, rgba(var(--nav-bg, 11, 11, 11), .5) 60%, rgba(var(--nav-bg, 11, 11, 11), 0) 100%);
+  background: linear-gradient(to bottom, rgba(var(--nav-bg, 0, 0, 0), .78) 0%, rgba(var(--nav-bg, 0, 0, 0), .5) 60%, rgba(var(--nav-bg, 0, 0, 0), 0) 100%);
   -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
   -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent); mask-image: linear-gradient(to bottom, #000 55%, transparent);
   opacity: 0; transition: opacity .5s var(--ease-out);
@@ -564,7 +564,7 @@ html[lang="ar"] .foot [lang="en"], html[lang="ar"] .loader__top [lang="en"] { fo
 
 /* nav over a red section: the red CTA turns ink so it stays visible */
 .nav.on-red .nav__cta { background: var(--ink); color: var(--paper); }
-.nav.on-red .nav__pill { background: rgba(11,11,11,.1); }
+.nav.on-red .nav__pill { background: rgba(0,0,0,.1); }
 
 /* lettering: stacked carousel on black. Horizontal edge to edge on laptop / tablet, vertical on phones */
 .lettering--drum { height: auto; padding: 0 0 var(--sec); overflow: hidden; }
@@ -716,7 +716,7 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 /* touch screens: no live blur behind the top bar (it is redrawn on every scroll frame); a denser tint instead */
 @media (hover: none), (pointer: coarse) {
   .nav::before { -webkit-backdrop-filter: none; backdrop-filter: none;
-    background: linear-gradient(to bottom, rgba(var(--nav-bg, 11, 11, 11), .94) 0%, rgba(var(--nav-bg, 11, 11, 11), .8) 60%, rgba(var(--nav-bg, 11, 11, 11), 0) 100%); }
+    background: linear-gradient(to bottom, rgba(var(--nav-bg, 0, 0, 0), .94) 0%, rgba(var(--nav-bg, 0, 0, 0), .8) 60%, rgba(var(--nav-bg, 0, 0, 0), 0) 100%); }
   .nav__burger { -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 
@@ -739,10 +739,10 @@ html[lang="ar"] .hchap .flex-word { white-space: nowrap; }
 .hero2::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background:
     /* a soft dark patch behind the logo, fading out with no visible edge, so the name holds on any picture */
-    radial-gradient(ellipse 420px 190px at 0 0, rgba(11,11,11,.62) 0%, rgba(11,11,11,.42) 35%, rgba(11,11,11,.16) 68%, rgba(11,11,11,0) 100%),
-    linear-gradient(to bottom, rgba(11,11,11,.5) 0%, rgba(11,11,11,0) 16%, rgba(11,11,11,0) 52%, rgba(11,11,11,.4) 74%, rgba(11,11,11,.82) 100%),
+    radial-gradient(ellipse 420px 190px at 0 0, rgba(0,0,0,.62) 0%, rgba(0,0,0,.42) 35%, rgba(0,0,0,.16) 68%, rgba(0,0,0,0) 100%),
+    linear-gradient(to bottom, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 16%, rgba(0,0,0,0) 52%, rgba(0,0,0,.4) 74%, rgba(0,0,0,.82) 100%),
     /* a very light veil over all the pictures */
-    linear-gradient(rgba(11,11,11,.14), rgba(11,11,11,.14)); }
+    linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)); }
 .hero2__text { position: absolute; z-index: 1; left: var(--pad); right: var(--pad); bottom: clamp(20px, 4vh, 44px); pointer-events: none; }
 .hero2__label { display: flex; justify-content: space-between; gap: 16px; white-space: nowrap; font-size: 13px; font-weight: 600; margin-bottom: clamp(10px, 1.6vh, 18px); opacity: 0; transition: opacity 1s var(--ease-out) .7s; }
 .loaded .hero2__label { opacity: 1; }

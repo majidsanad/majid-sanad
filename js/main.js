@@ -528,7 +528,7 @@
         .then(svgs => {
           // phones: logos as images (drawn once) instead of inline vectors that iOS re-rasterises while moving
           const asImg = svg => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
-            svg.replace(/currentColor/g, "#EFEFED").replace(/var\(--logo-bg[^)]*\)/g, "#0B0B0B"));
+            svg.replace(/currentColor/g, "#EFEFED").replace(/var\(--logo-bg[^)]*\)/g, "#000000"));
           const cell = ([n, svg]) => `<span class="mk" style="--s:${MKS[n]}"><img src="${asImg(svg)}" alt="${AR ? "شعار من تصميم ماجد سند" : "Logo designed by Majid Sanad"}" decoding="async"></span>`;
           [svgs.slice(0, 14), svgs.slice(14)].forEach((set, r) => {
             const html = set.filter(x => x[1]).map(cell).join("");
@@ -744,7 +744,7 @@
     if (under !== navUnder) {
       navUnder = under;
       // a section's theme wins over its computed background (the hero is a light card on a dark section)
-      const THEME = { paper: "rgb(239, 239, 237)", black: "rgb(11, 11, 11)", red: "rgb(239, 43, 60)" };
+      const THEME = { paper: "rgb(239, 239, 237)", black: "rgb(0, 0, 0)", red: "rgb(239, 43, 60)" };
       let bg = under && under.dataset.theme ? THEME[under.dataset.theme] : under ? getComputedStyle(under).backgroundColor : "";
       if (!bg || bg === "transparent" || /,\s*0\)$/.test(bg)) bg = light ? THEME.paper : THEME.black;
       const m = bg.match(/\d+(\.\d+)?/g);
